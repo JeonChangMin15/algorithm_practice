@@ -1,24 +1,26 @@
-// 첫번째줄에는 거스름돈이 주어진다
-// 2원, 5원으로만 거스름돈을 줘야한다
-// 동전의 개수가 최소가 되도록해줘야한다
-// 5원을 언제빼야지?
-// 아니면 5로 나눈 몫을 먼저 구해서
-// 그 몫을 5로 값한 나머지가 짝수일때까지 계속 구하면된다
+const input = require("fs")
+  .readFileSync("/dev/stdin", "utf8")
+  .trim()
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
-const input = require("fs").readFileSync("/dev/stdin", "utf8").trim().split("\n");
+// 5원, 2원으로 최소한의 동전의 개수를 구한다
+// 만약 거슬러 줄 수 없다면 -1을 출력
+// 1. 5로 나눈 몫을 구한다.
+// 2. for문을 몫부터 0까지 -1씩 감소하면서 나머지가 짝수면 바로 리턴한다
+// 3. 만약 0까지 나머지가 끝까지 홀수면 -1
 
 const solution = (input) => {
-  let money = Number(input[0]);
-  let fiveCoin = parseInt(money / 5);
+  const money = Number(input[0]);
+  const n = parseInt(money / 5);
+  let cnt = -1;
 
-  while (fiveCoin >= 0) {
-    let res = money - fiveCoin * 5;
+  for (let i = n; i >= 0; i--) {
+    const res = money - i * 5;
     if (res % 2 === 0) {
-      let twoCoin = parseInt(res / 2);
-      console.log(fiveCoin + twoCoin);
+      cnt = i + parseInt(res / 2);
+      console.log(cnt);
       return;
-    } else {
-      fiveCoin--;
     }
   }
 
