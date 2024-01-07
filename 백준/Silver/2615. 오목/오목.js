@@ -8,6 +8,8 @@ const input = require("fs").readFileSync("/dev/stdin", "utf8").trim().split("\n"
 
 // 바둑점 이중for문을 돌면서 자기 위치에서 자기와 같은 바둑돌이 연속해서 4개가 더 있는지 확인하면된다
 // 자기 위치에서 가로로 4칸 검사, 세로로 4칸검사, 대각선 오른쪽 검사(오른쪽+1, 아래로 +1), 대각선 왼쪽 검사(오른쪽 -1, 아래로 +1)
+// 그리고 본인 포지션에서 5개만 검사하는게 아니라 해당 오목의 양끝 +1,-1을 자기자신과 다른지 체킹해야된다!
+
 const solution = (input) => {
   const grid = [];
   for (let i = 0; i < input.length; i++) {
