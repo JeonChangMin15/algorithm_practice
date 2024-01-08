@@ -12,11 +12,7 @@ const input = require("fs")
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
-  const visited = Array(n)
-    .fill(0)
-    .map((e) => Array(n).fill(false));
 
-  let house = 0;
   const houseArr = [];
   for (let i = 1; i < input.length; i++) {
     grid.push(input[i].split("").map((v) => Number(v)));
@@ -24,23 +20,23 @@ const solution = (input) => {
 
   const dfs = (row, col) => {
     if (row < 0 || row >= n || col < 0 || col >= n || grid[row][col] === 0)
-      return;
+      return 0;
 
     grid[row][col] = 0;
-    house += 1;
 
-    dfs(row + 1, col);
-    dfs(row - 1, col);
-    dfs(row, col + 1);
-    dfs(row, col - 1);
+    const down = dfs(row + 1, col);
+    const up = dfs(row - 1, col);
+    const right = dfs(row, col + 1);
+    const left = dfs(row, col - 1);
+
+    return 1 + down + up + right + left;
   };
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      house = 0;
       if (grid[i][j] === 1) {
-        dfs(i, j);
-        houseArr.push(house);
+        const val = dfs(i, j);
+        houseArr.push(val);
       }
     }
   }
