@@ -20,7 +20,7 @@ const solution = (input) => {
     return;
   }
 
-  let lt = 1;
+  let lt = 0;
   let rt = cost[n - 1];
   let answer = 0;
 
@@ -29,7 +29,7 @@ const solution = (input) => {
     let sum = 0;
 
     cost.forEach((v) => {
-      if (v < mid) {
+      if (v <= mid) {
         sum += v;
       } else {
         sum += mid;
