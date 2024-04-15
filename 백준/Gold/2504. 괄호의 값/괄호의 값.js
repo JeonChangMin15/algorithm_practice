@@ -57,7 +57,6 @@ const solution = (input) => {
 
       if (val === "(") {
         if (
-          index + 1 < sample.length &&
           sample[index + 1] !== "(" &&
           sample[index + 1] !== "["
         ) {
@@ -74,7 +73,6 @@ const solution = (input) => {
 
       if (val === "[") {
         if (
-          index + 1 < sample.length &&
           sample[index + 1] !== "(" &&
           sample[index + 1] !== "["
         ) {
