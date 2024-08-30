@@ -1,39 +1,29 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
-// 첫째줄에는 n(세로), m(가로) 길이가 주어진다
-// 0은 갈 수없는 땅이고 1은 갈 수 있고 2는 목표지점. 2는 단 하나만 주어진다
-// 목표지점에 각 위치가 얼마나 떨어져있는지 출력을한다.
-// 원래 0인곳은 0으로 표시하고 1인데 갈 수 없다면 -1을 출력한다
-// 먼저 이중 for문으로 2인 지점을 찾는다
-// 거기서 bfs로 상하좌우 탐색을 하면서 거리를 집어넣는다
-// 그 이후에 지도에서 1인데 거리가 0인곳은 -1로 교체하면된다.
+// 첫째줄에 rowN, colN이 주어지고 두번째 줄부터 grid가 주어진다
+// 0은 원래 못가는 땅이고 1은 갈 수 있는 땅 2는 목표지점이다.
+// bfs로 시작해서 1이면 가고 해당 지점을 현재 거리에서 +1로 업데이트한다
+// 그렇게 한 다음에 dist에서 갈 수 있는데 0인곳은 -1로 마킹
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
 
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= rowN; i++) {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
-  const queue = [];
 
-  const distanceGrid = Array(rowN)
-    .fill(0)
-    .map((e) => Array(colN).fill(0));
+  const queue = [];
 
   const visited = Array(rowN)
     .fill(0)
-    .map((e) => Array(colN).fill(false));
+    .map((v) => Array(colN).fill(false));
 
-  const dirs = [
-    [-1, 0],
-    [1, 0],
-    [0, 1],
-    [0, -1],
-  ];
+  const dist = Array(rowN)
+    .fill(0)
+    .map((v) => Array(colN).fill(0));
 
   for (let i = 0; i < rowN; i++) {
     for (let j = 0; j < colN; j++) {
@@ -44,24 +34,30 @@ const solution = (input) => {
     }
   }
 
-  while (queue.length) {
-    const [x, y, dist] = queue.shift();
+  const dirs = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ];
 
-    for (let [dx, dy] of dirs) {
+  while (queue.length) {
+    const [x, y, curDist] = queue.shift();
+
+    for (const [dx, dy] of dirs) {
       const nextX = x + dx;
       const nextY = y + dy;
-
       const isValid =
         nextX >= 0 &&
         nextX < rowN &&
         nextY >= 0 &&
         nextY < colN &&
-        grid[nextX][nextY] === 1 &&
-        !visited[nextX][nextY];
+        !visited[nextX][nextY] &&
+        grid[nextX][nextY] === 1;
 
       if (isValid) {
-        queue.push([nextX, nextY, dist + 1]);
-        distanceGrid[nextX][nextY] = dist + 1;
+        queue.push([nextX, nextY, curDist + 1]);
+        dist[nextX][nextY] = curDist + 1;
         visited[nextX][nextY] = true;
       }
     }
@@ -69,14 +65,14 @@ const solution = (input) => {
 
   for (let i = 0; i < rowN; i++) {
     for (let j = 0; j < colN; j++) {
-      if (grid[i][j] === 1 && distanceGrid[i][j] === 0) {
-        distanceGrid[i][j] = -1;
+      if (grid[i][j] === 1 && dist[i][j] === 0) {
+        dist[i][j] = -1;
       }
     }
   }
 
   for (let i = 0; i < rowN; i++) {
-    console.log(distanceGrid[i].join(" "));
+    console.log(dist[i].join(" "));
   }
 };
 
