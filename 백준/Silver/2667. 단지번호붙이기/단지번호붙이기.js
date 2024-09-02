@@ -4,48 +4,41 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에는 정사각형의 크기
-// 두번째줄부터는 지도 0 1 형식 0은 집이 없고 1은 집이 있음
-// 단지의 수를 첫줄에 출력하고 해당 단지에 있는 집의 수를 오름차순으로 출력
-// 먼저 grid변수에다가 집을 받고 dfs로 집인지 아닌지 탐색을한다
-// 이중 for문으로 grid === 1인 지점만 방문한다
+// 1은 집 존재 0은 없음 상화좌우 연결되면 단지다
+// 단수를 출력하고 각 단지에 속해있는 집의 수를 오름차순으로 출력
+// 첫째줄 N이 주어지고 정사각형 그리드, 두번째줄부터 띄어쓰기 없이 그리드
+// dfs로 상하좌우 탐색하면서 0으로 만들면된다
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
-
-  const houseArr = [];
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= n; i++) {
     grid.push(input[i].split("").map((v) => Number(v)));
   }
+  const areas = [];
 
-  const dfs = (row, col) => {
-    if (row < 0 || row >= n || col < 0 || col >= n || grid[row][col] === 0)
-      return 0;
+  const dfs = (x, y) => {
+    if (x < 0 || x >= n || y < 0 || y >= n || grid[x][y] === 0) return 0;
 
-    grid[row][col] = 0;
+    grid[x][y] = 0;
 
-    const down = dfs(row + 1, col);
-    const up = dfs(row - 1, col);
-    const right = dfs(row, col + 1);
-    const left = dfs(row, col - 1);
+    const up = dfs(x - 1, y);
+    const down = dfs(x + 1, y);
+    const left = dfs(x, y - 1);
+    const right = dfs(x, y + 1);
 
-    return 1 + down + up + right + left;
+    return 1 + up + down + left + right;
   };
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (grid[i][j] === 1) {
-        const val = dfs(i, j);
-        houseArr.push(val);
-      }
+      if (grid[i][j] === 0) continue;
+      areas.push(dfs(i, j));
     }
   }
 
-  houseArr.sort((a, b) => a - b);
-  console.log(houseArr.length);
-  for (let i = 0; i < houseArr.length; i++) {
-    console.log(houseArr[i]);
-  }
+  areas.sort((a, b) => a - b);
+  console.log(areas.length);
+  console.log(areas.join("\n"));
 };
 
 solution(input);
