@@ -1,56 +1,62 @@
-const input = require("fs").readFileSync("/dev/stdin", "utf8").trim().split("\n");
 
+const input = require("fs")
+  .readFileSync("/dev/stdin", "utf8")
+  .trim()
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에는 세로 가로 줄 수가 주어진다
-// 두번째줄부터는 해당 1,0이 띄어쓰기 없이 주어진다'
-// 총 몇칸을 지나야 끝 지점까지 도달할 수 있는지 구해야된다.
-// bfs로 상하좌우 탐색을 하고 안가본 지점이면 해당 지점에 현재값 +1을 해주면 된다
-// 입력은 항상 끝지점까지 도달할 수 있다는 전제다
+// 첫번째줄에 rowN, colN이 주어지고
+// 두번째줄에 그리드가 간격없이 주어진다
+// 0,0에서 rowN-1, colN-1까지 최소거리를 구해라
+// 항상 도착할 수 있는 그리드만 주어진다
+// 시작점 도착점까지 다 포함된다.
+// bfs로 풀면된다
 const solution = (input) => {
-  const [row, col] = input[0].split(" ").map((v) => Number(v));
-  const miro = [];
-  for (let i = 1; i < input.length; i++) {
-    const row = input[i].split("").map((v) => Number(v));
-    miro.push(row);
+  const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
+  const grid = [];
+
+  for (let i = 1; i <= rowN; i++) {
+    grid.push(input[i].split("").map((v) => Number(v)));
   }
 
-  const visited = Array(row)
+  const dist = Array(rowN)
     .fill(0)
-    .map((v) => Array(col).fill(false));
+    .map((v) => Array(colN).fill(Infinity));
 
-  const distance = Array(row)
-    .fill(0)
-    .map((v) => Array(col).fill(0));
+  dist[0][0] = 1;
 
-  distance[0][0] = 1;
-  visited[0][0] = true;
+  const queue = [[0, 0, 1]];
 
-  const dir = [
+  const dirs = [
     [-1, 0],
     [1, 0],
-    [0, -1],
     [0, 1],
+    [0, -1],
   ];
 
-  const queue = [[0, 0]];
+  while (queue.length) {
+    const [x, y, curDist] = queue.shift();
 
-  while (queue.length > 0) {
-    const [x, y] = queue.shift();
-
-    for (let [dx, dy] of dir) {
+    for (const [dx, dy] of dirs) {
       const nextX = x + dx;
       const nextY = y + dy;
-      const isValid = nextX >= 0 && nextX < row && nextY >= 0 && nextY < col;
 
-      if (isValid && !visited[nextX][nextY] && miro[nextX][nextY] === 1) {
-        visited[nextX][nextY] = true;
-        distance[nextX][nextY] = distance[x][y] + 1;
-        queue.push([nextX, nextY]);
+      const isValid =
+        nextX >= 0 &&
+        nextX < rowN &&
+        nextY >= 0 &&
+        nextY < colN &&
+        curDist + 1 < dist[nextX][nextY] &&
+        grid[nextX][nextY];
+
+      if (isValid) {
+        queue.push([nextX, nextY, curDist + 1]);
+        dist[nextX][nextY] = curDist + 1;
       }
     }
   }
 
-  console.log(distance[row - 1][col - 1]);
+  console.log(dist[rowN - 1][colN - 1]);
 };
 
 solution(input);
