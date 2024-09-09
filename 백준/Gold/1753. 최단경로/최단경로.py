@@ -1,40 +1,35 @@
 import heapq
 
 cityN, lineN = list(map(int, input().split()))
-start = int(input())
-
+startN = int(input())
 graph = {}
 
 for i in range(1, cityN+1):
   graph[i] = []
 
 for i in range(lineN):
-  n1, n2, dist = list(map(int, input().split()))
-  graph[n1].append([dist, n2])
+  u,v,w = list(map(int, input().split()))
+  graph[u].append([w, v])
 
-cityDist = [float('inf')] * (cityN + 1)
-cityDist[start] = 0
 queue = []
-heapq.heappush(queue, [0, start])
+heapq.heappush(queue, [0, startN])
+
+dist = [float('inf')]*(cityN+1)
+dist[startN] = 0
 
 while len(queue):
   curDist, curCity = heapq.heappop(queue)
-
-  if curDist > cityDist[curCity]:
+  if curDist > dist[curCity]:
     continue
 
-  for d, c in graph[curCity]:
-    if d + curDist < cityDist[c]:
-      heapq.heappush(queue,[d + curDist, c])
-      cityDist[c] = d + curDist
+  for nextDist, nextCity in graph[curCity]:
+    if nextDist + curDist > dist[nextCity]:
+      continue
+    dist[nextCity] = nextDist + curDist
+    heapq.heappush(queue, [nextDist + curDist, nextCity])
 
-cityDist.pop(0)
+for i in range(1, cityN+1):
+  if dist[i] == float('inf'):
+    dist[i] = 'INF'
 
-for i in range(len(cityDist)):
-  if cityDist[i] == float('inf'):
-    cityDist[i] = "INF"
-
-
-answer = "\n".join(list(map(str, cityDist)))
-
-print(answer)
+print("\n".join(list(map(str, dist[1:]))))
