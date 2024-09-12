@@ -6,9 +6,9 @@ for i in range(n):
 
 answer = float('inf')
 
-def backTracking(arr):
+def backTracking(arr, start):
   global answer
-  
+
   if len(arr) > 0:
     taste1 = 1
     taste2 = 0
@@ -18,13 +18,11 @@ def backTracking(arr):
       taste2 += t2
     answer = min(answer, abs(taste1-taste2))
 
-  for i in range(n):
-    if i in arr:
-      continue
+  for i in range(start, n):
     arr.append(i)
-    backTracking(arr)
+    backTracking(arr, i+1)
     arr.pop()
 
-backTracking([])
+backTracking([], 0)
 
 print(answer)
