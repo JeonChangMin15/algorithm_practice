@@ -1,11 +1,8 @@
 from collections import deque
 
-nodeN, lineN = list(map(int, input().split()))
-startNode, endNode = list(map(int, input().split()))
-graph = {}
-
-for i in range(1, nodeN+1):
-  graph[i] = []
+cityN, lineN = list(map(int, input().split()))
+startCity, endCity = list(map(int, input().split()))
+graph = [[] for _ in range(cityN+1)]
 
 for i in range(lineN):
   n1, n2 = list(map(int, input().split()))
@@ -13,31 +10,26 @@ for i in range(lineN):
   graph[n2].append(n1)
 
 queue = deque()
-queue.append([startNode, 0])
-
-visited = [False]*(nodeN+1)
-visited[startNode] = True
-
-answer = 0
+visited = [False]*(cityN+1)
+visited[startCity] = True
+queue.append([startCity, 0])
 
 while len(queue):
-  curNode, curTime = queue.popleft()
-  if curNode == endNode:
-    answer = curTime
+  curCity, curTime = queue.popleft()
+
+  if curCity == endCity:
+    print(curTime)
     break
 
-  if curNode-1>=1 and not visited[curNode-1]:
-    visited[curNode-1] = True
-    queue.append([curNode-1, curTime+1])
+  if curCity-1>=1 and not visited[curCity-1]:
+    visited[curCity-1] = True
+    queue.append([curCity-1, curTime+1])
 
-  if curNode+1<=nodeN and not visited[curNode+1]:
-    visited[curNode+1] = True
-    queue.append([curNode+1, curTime+1])
+  if curCity+1<=cityN and not visited[curCity+1]:
+    visited[curCity+1] = True
+    queue.append([curCity+1, curTime+1])
 
-  for nextNode in graph[curNode]:
-    if visited[nextNode]:
-      continue
-    visited[nextNode] = True
-    queue.append([nextNode, curTime+1])
-
-print(answer)
+  for nextCity in graph[curCity]:
+    if not visited[nextCity]:
+      queue.append([nextCity, curTime+1])
+      visited[nextCity] = True
