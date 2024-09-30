@@ -3,7 +3,7 @@ sys.setrecursionlimit(10**5)
 
 n = int(input())
 
-for i in range(n):
+def solution():
   rowN, colN = list(map(int, input().split()))
   grid = []
 
@@ -11,26 +11,25 @@ for i in range(n):
     grid.append(list(input()))
 
   def dfs(x, y):
-    if x <0 or x>=rowN or y<0 or y>=colN or grid[x][y] =='.':
+    if x < 0 or x >= rowN or y < 0 or y >= colN or grid[x][y] == '.':
       return
 
     grid[x][y] = '.'
+    dfs(x - 1, y)
+    dfs(x + 1, y)
+    dfs(x, y -1)
+    dfs(x, y + 1)
 
-    up = dfs(x-1, y)
-    down = dfs(x+1, y)
-    left = dfs(x, y-1)
-    right = dfs(x, y+1)
-
-    return 
-
-  area = 0
+  answer = 0
 
   for i in range(rowN):
     for j in range(colN):
-      if grid[i][j] == '.':
-        continue
-      
-      dfs(i, j)
-      area += 1
+      if grid[i][j] =='#':
+        answer += 1
+        dfs(i, j)
 
-  print(area)
+  print(answer)
+  
+
+for i in range(n):
+  solution()
