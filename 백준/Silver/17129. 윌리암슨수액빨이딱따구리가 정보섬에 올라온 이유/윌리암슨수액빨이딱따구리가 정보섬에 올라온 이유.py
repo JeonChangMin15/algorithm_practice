@@ -12,34 +12,31 @@ for i in range(rowN):
   for j in range(colN):
     if grid[i][j] == 2:
       queue.append([i,j,0])
+      grid[i][j] = 1
 
-dirs = [[-1, 0],[1, 0], [0, -1], [0, 1]]
-
-visited = [[False]*colN for _ in range(rowN)]
-
-food = [3,4,5]
-
-answer = "NIE"
-answerDist = 0
+dist = -1
+dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
 
 while len(queue):
-  x,y, dist = queue.popleft()
+  x, y, cnt = queue.popleft()
 
-  if grid[x][y] in food:
-    answer = "TAK"
-    answerDist = dist
+  if dist != -1:
     break
 
   for dx, dy in dirs:
-    nextX = x+dx
-    nextY = y+dy
-    isValid = 0<=nextX<rowN and 0<=nextY<colN and not visited[nextX][nextY] and grid[nextX][nextY] != 1
+    nextX = x + dx
+    nextY = y + dy
+    isValid = 0<=nextX<rowN and 0<=nextY<colN and grid[nextX][nextY] != 1
     if isValid:
-      queue.append([nextX, nextY, dist + 1])
-      visited[nextX][nextY] = True
+      if grid[nextX][nextY] == 3 or grid[nextX][nextY] == 4 or grid[nextX][nextY] == 5:
+        dist = cnt +1
+        break
 
-if answer == 'TAK':
-  print(answer)
-  print(answerDist)
+      queue.append([nextX, nextY, cnt + 1])
+      grid[nextX][nextY] = 1
+
+if dist == -1:
+  print('NIE')
 else:
-  print(answer)
+  print("TAK")
+  print(dist)
