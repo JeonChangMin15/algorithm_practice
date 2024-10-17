@@ -1,36 +1,32 @@
 from collections import deque
 
-n, chessN = list(map(int, input().split()))
+dirs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]
+n, targetN = list(map(int, input().split()))
 startX, startY = list(map(int, input().split()))
-positions = []
+target = []
 
-for i in range(chessN):
-  x,y = list(map(int, input().split()))
-  positions.append([x-1, y-1])
+for i in range(targetN):
+  x, y = list(map(int, input().split()))
+  target.append([x-1, y-1])
 
-visited = [[False]*n for _ in range(n)]
-dist = [[0]*n for _ in range(n)]
-
+grid = [[float('inf')]*n for _ in range(n)]
 queue = deque()
 queue.append([startX-1, startY-1, 0])
-visited[startX-1][startY-1] = True
-dirs = [[-2, -1], [-2, 1],[-1, -2],[-1, 2],[1, -2],[1, 2],[2, -1],[2, 1]]
+grid[startX-1][startY-1] = 0
 
 while len(queue):
-  x, y, cnt = queue.popleft()
-  
+  x,y,dist = queue.popleft()
+
   for dx, dy in dirs:
-    nextX = x + dx
-    nextY = y + dy
-    isValid = 0<=nextX<n and 0<= nextY < n and not visited[nextX][nextY]
+    nextX = x +dx
+    nextY = y +dy
+    isValid = 0<=nextX<n and 0<=nextY<n and dist+1 < grid[nextX][nextY]
     if isValid:
-      queue.append([nextX, nextY, cnt + 1])
-      dist[nextX][nextY] = cnt + 1
-      visited[nextX][nextY] = True
+      queue.append([nextX,nextY, dist+1])
+      grid[nextX][nextY] = dist + 1
 
 answer = []
-
-for x,y in positions:
-  answer.append(dist[x][y])
+for x,y in target:
+  answer.append(grid[x][y])
 
 print(" ".join(list(map(str, answer))))
