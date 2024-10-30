@@ -1,47 +1,34 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
 const solution = (input) => {
-  const n = Number(input[0]);
-  const cost = input[1]
-    .split(" ")
-    .map((v) => Number(v))
-    .sort((a, b) => a - b);
+  const cityN = Number(input[0]);
+  const arr = input[1].split(" ").map((v) => Number(v));
+  const totalMoney = Number(input[2]);
 
-  const limit = Number(input[2]);
+  let start = 1;
+  let end = Math.max(...arr);
+  let answer = 1;
 
-  const initialTotal = cost.reduce((prev, cur) => prev + cur, 0);
+  while (start <= end) {
+    let curMoney = Math.floor((start + end) / 2);
+    let needTotal = 0;
 
-  if (initialTotal <= limit) {
-    console.log(cost[n - 1]);
-    return;
-  }
-
-  let lt = 0;
-  let rt = cost[n - 1];
-  let answer = 0;
-
-  while (lt <= rt) {
-    let mid = Math.floor((lt + rt) / 2);
-    let sum = 0;
-
-    cost.forEach((v) => {
-      if (v <= mid) {
-        sum += v;
+    arr.forEach((val) => {
+      if (val < curMoney) {
+        needTotal += val;
       } else {
-        sum += mid;
+        needTotal += curMoney;
       }
     });
 
-    if (sum <= limit) {
-      lt = mid + 1;
-      answer = mid;
-    }
-    if (sum > limit) {
-      rt = mid - 1;
+    if (needTotal <= totalMoney) {
+      answer = Math.max(answer, curMoney);
+      start = curMoney + 1;
+    } else {
+      end = curMoney - 1;
     }
   }
 
