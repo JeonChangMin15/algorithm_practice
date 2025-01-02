@@ -3,82 +3,78 @@ const input = require("fs")
   .trim()
   .split("\n");
 
-// 빨간색과 초록색을 구분못하는 케이스의 지역의 수와 구분하는 케이스의 지역의 수를 구해라
-// dfs로 첫번째는 r,g면 visited와 r또는 g면 간다
-// dfs로 두번째는 r,g,b 각 알파벳일때만 간다 RGB
-// 첫번째줄은 N, 두번째줄은 RGB 공백없이 주어진다
+// R, G, B로 이루어진 그리드가 주어진다
+// 적록 색약은 R,G를 똑같이 본다 일반인은 다 구분을 한다
+// 일반인이 봤을때와 적록색약이 봣을때의 구역수를 한줄에 각각 출력한다
+// dfs로 하는데 각각 dfs를 돌려서 답을 구하면 된다
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
-  const noLookVisited = Array(n)
-    .fill(0)
-    .map((v) => Array(n).fill(false));
 
-  const lookVisited = Array(n)
-    .fill(0)
-    .map((v) => Array(n).fill(false));
-
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= n; i++) {
     grid.push(input[i].split(""));
   }
-  let lookArea = 0;
-  let noLookArea = 0;
 
-  const noLookDfs = (row, col, color) => {
-    if (row < 0 || row >= n || col < 0 || col >= n || noLookVisited[row][col])
-      return;
-    if (color === "R" || color === "G") {
-      if (grid[row][col] === "B") return;
-      noLookVisited[row][col] = true;
-      noLookDfs(row + 1, col, color);
-      noLookDfs(row - 1, col, color);
-      noLookDfs(row, col + 1, color);
-      noLookDfs(row, col - 1, color);
-    } else {
-      if (grid[row][col] !== "B") return;
-      noLookVisited[row][col] = true;
-      noLookDfs(row + 1, col, color);
-      noLookDfs(row - 1, col, color);
-      noLookDfs(row, col + 1, color);
-      noLookDfs(row, col - 1, color);
-    }
-  };
+  let normal = 0;
+  const visited = Array(n)
+    .fill(0)
+    .map((v) => Array(n).fill(false));
 
-  const lookDfs = (row, col, color) => {
+  const dfs = (x, y, color) => {
     if (
-      row < 0 ||
-      row >= n ||
-      col < 0 ||
-      col >= n ||
-      grid[row][col] !== color ||
-      lookVisited[row][col]
+      x < 0 ||
+      x >= n ||
+      y < 0 ||
+      y >= n ||
+      visited[x][y] ||
+      grid[x][y] !== color
     )
       return;
 
-    lookVisited[row][col] = true;
-    lookDfs(row - 1, col, color);
-    lookDfs(row + 1, col, color);
-    lookDfs(row, col - 1, color);
-    lookDfs(row, col + 1, color);
+    visited[x][y] = true;
+    dfs(x - 1, y, color);
+    dfs(x + 1, y, color);
+    dfs(x, y - 1, color);
+    dfs(x, y + 1, color);
   };
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (noLookVisited[i][j]) continue;
-      noLookDfs(i, j, grid[i][j]);
-      noLookArea++;
+      if (!visited[i][j]) {
+        dfs(i, j, grid[i][j]);
+        normal += 1;
+      }
     }
   }
+
+  const secondVisited = Array(n)
+    .fill(0)
+    .map((v) => Array(n).fill(false));
+
+  let notNormal = 0;
+
+  const secondDfs = (x, y, color) => {
+    if (x < 0 || x >= n || y < 0 || y >= n || secondVisited[x][y]) return;
+    if (color === "B" && (grid[x][y] === "R" || grid[x][y] === "G")) return;
+    if ((color === "R" || color === "G") && grid[x][y] === "B") return;
+    secondVisited[x][y] = true;
+
+    secondDfs(x - 1, y, color);
+    secondDfs(x + 1, y, color);
+    secondDfs(x, y - 1, color);
+    secondDfs(x, y + 1, color);
+  };
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (lookVisited[i][j]) continue;
-      lookDfs(i, j, grid[i][j]);
-      lookArea++;
+      if (!secondVisited[i][j]) {
+        notNormal += 1;
+        secondDfs(i, j, grid[i][j]);
+      }
     }
   }
 
-  console.log(lookArea, noLookArea);
+  console.log(normal, notNormal);
 };
 
 solution(input);
