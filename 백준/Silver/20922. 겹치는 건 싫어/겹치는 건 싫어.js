@@ -9,25 +9,21 @@ const solution = (input) => {
 
   let lt = 0;
   let rt = 0;
-  let obj = {};
-  let answer = 0;
-  let curLen = 0;
+  const cnt = Array(100001).fill(0);
+  let answer = 1;
 
   while (rt < n) {
     const val = nums[rt];
-    if (!obj[val]) obj[val] = [];
 
-    if (obj[val].length < limitN) {
-      obj[val].push(rt);
-      curLen += 1;
-      answer = Math.max(answer, curLen);
+    if (cnt[val] < limitN) {
+      cnt[val] += 1;
       rt += 1;
     } else {
-      const lastIndex = obj[val][0];
-      rt = lastIndex + 1;
-      obj = {};
-      curLen = 0;
+      cnt[nums[lt]] -= 1;
+      lt += 1;
     }
+
+    answer = Math.max(answer, rt - lt);
   }
 
   console.log(answer);
