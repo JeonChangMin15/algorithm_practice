@@ -1,28 +1,46 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
+// 첫번째줄에 rowN, colN이 주어진다
+// 두번재줄부터 그리드가 주어진다
+// 빙산의 높이가 해당 칸에 동서남북 네 방향으로 붙어있는 0의 개수만큼 줄어든다
+// 0보다 더 줄어들지는 않는다 두 덩어리 이상으로 분리되는 최초의 시간을 구한다
+// 만약 전부 녹을때까지 분리안되면 0을 출력
+// 먼저 이중 for문으로 해당 그리드가 0이면 상하좌우 탐색해서 0보다 큰 지점이 있으면
+// 해당 좌표를 저장한다 그리고나서 해당 좌표들을 -1씩해준다
+// 그리고나서 시간 +1을 해주고 dfs로 영역의 수를 탐색하는 방식으로 하면된다
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
 
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= rowN; i++) {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  const queue = [];
+  let day = 0;
+  let isValid = false;
+  let isContinue = true;
 
-  for (let i = 0; i < rowN; i++) {
-    for (let j = 0; j < colN; j++) {
-      if (grid[i][j] !== 0) {
-        queue.push([i, j, grid[i][j], 0]);
-      }
-    }
-  }
+  const dfs = (x, y, visited) => {
+    if (
+      x < 0 ||
+      x >= rowN ||
+      y < 0 ||
+      y >= colN ||
+      visited[x][y] ||
+      grid[x][y] === 0
+    )
+      return;
 
-  let currentDay = 0;
+    visited[x][y] = true;
+
+    dfs(x - 1, y, visited);
+    dfs(x + 1, y, visited);
+    dfs(x, y - 1, visited);
+    dfs(x, y + 1, visited);
+  };
 
   const dirs = [
     [-1, 0],
@@ -31,72 +49,61 @@ const solution = (input) => {
     [0, 1],
   ];
 
-  let currentGrid = Array(rowN)
-    .fill(0)
-    .map((e) => Array(colN).fill(0));
+  while (isContinue) {
+    const visited = Array(rowN)
+      .fill(0)
+      .map((v) => Array(colN).fill(false));
 
-  let area = 0;
-  let zeroPos = [];
+    let area = 0;
+    const coordinates = [];
 
-  const dfs = (x, y) => {
-    if (x < 0 || x >= rowN || y < 0 || y >= colN || currentGrid[x][y] === 0)
-      return;
-    currentGrid[x][y] = 0;
+    for (let i = 0; i < rowN; i++) {
+      for (let j = 0; j < colN; j++) {
+        if (grid[i][j] === 0 || visited[i][j]) continue;
+        dfs(i, j, visited);
+        area += 1;
+      }
+    }
 
-    dfs(x + 1, y);
-    dfs(x - 1, y);
-    dfs(x, y + 1);
-    dfs(x, y - 1);
-  };
+    if (area > 1) {
+      isValid = true;
+      break;
+    }
+    if (area === 0) {
+      isValid = false;
+      break;
+    }
 
-  while (queue.length) {
-    const [x, y, cnt, day] = queue.shift();
+    for (let i = 0; i < rowN; i++) {
+      for (let j = 0; j < colN; j++) {
+        if (grid[i][j] > 0) continue;
+        for (const [dx, dy] of dirs) {
+          const nextX = i + dx;
+          const nextY = j + dy;
+          const isValid =
+            nextX >= 0 &&
+            nextX < rowN &&
+            nextY >= 0 &&
+            nextY < colN &&
+            grid[nextX][nextY] > 0;
 
-    if (day > currentDay) {
-      zeroPos.forEach((pos) => (grid[pos[0]][pos[1]] = 0));
-      area = 0;
-      for (let i = 0; i < rowN; i++) {
-        for (let j = 0; j < colN; j++) {
-          if (currentGrid[i][j] === 0) continue;
-          dfs(i, j);
-          area += 1;
+          if (isValid) {
+            coordinates.push([nextX, nextY]);
+          }
         }
       }
+    }
 
-      zeroPos = [];
-
-      if (area > 1) {
-        console.log(day);
-        return;
-      } else {
-        currentDay += 1;
+    for (const [x, y] of coordinates) {
+      if (grid[x][y] > 0) {
+        grid[x][y] -= 1;
       }
     }
 
-    let cur = cnt;
-
-    for (let [dx, dy] of dirs) {
-      const neighborX = x + dx;
-      const neighborY = y + dy;
-      const isValid =
-        neighborX >= 0 &&
-        neighborX < rowN &&
-        neighborY >= 0 &&
-        neighborY < colN &&
-        grid[neighborX][neighborY] === 0;
-
-      if (isValid) cur -= 1;
-    }
-
-    if (cur > 0) {
-      queue.push([x, y, cur, day + 1]);
-      currentGrid[x][y] = cur;
-    } else {
-      zeroPos.push([x, y]);
-    }
+    day += 1;
   }
 
-  console.log(0);
+  console.log(isValid ? day : 0);
 };
 
 solution(input);
