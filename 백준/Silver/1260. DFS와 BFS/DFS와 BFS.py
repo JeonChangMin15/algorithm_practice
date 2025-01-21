@@ -1,53 +1,47 @@
 from collections import deque
 
-nodeN, lineN, startN = list(map(int, input().split()))
-graph = {}
-
-for i in range(1, nodeN+1):
-  graph[i] = []
+n, lineN, start = list(map(int, input().split()))
+grid = [[] for _ in range(n+1)]
 
 for i in range(lineN):
   n1, n2 = list(map(int, input().split()))
-  graph[n1].append(n2)
-  graph[n2].append(n1)
+  grid[n1].append(n2)
+  grid[n2].append(n1)
 
-for i in range(1, nodeN+1):
-  graph[i].sort()
+for i in range(n+1):
+  grid[i].sort()
 
-dfsVisited = [False]*(nodeN+1)
 dfsArr = []
+dfsVisit = [False]*(n+1)
 
-def dfs(curNode):
-  dfsVisited[curNode] = True
-  dfsArr.append(curNode)
+def dfs(node):
+  dfsArr.append(node)
+  dfsVisit[node] = True
 
-  for nextNode in graph[curNode]:
-    if dfsVisited[nextNode]:
+  for nextNode in grid[node]:
+    if dfsVisit[nextNode]:
       continue
     dfs(nextNode)
 
-dfs(startN)
+dfs(start)
+
+bfsArr = []
+bfsVisit = [False]*(n+1)
+queue = deque()
+
+bfsArr.append(start)
+bfsVisit[start] = True
+queue.append(start)
+
+while len(queue):
+  node = queue.popleft()
+
+  for nextNode in grid[node]:
+    if bfsVisit[nextNode]:
+      continue
+    bfsVisit[nextNode] = True
+    bfsArr.append(nextNode)
+    queue.append(nextNode)
+
 print(" ".join(list(map(str, dfsArr))))
-
-def bfs(startNode):
-  bfsVisited = [False]*(nodeN+1)
-  bfsArr = [startNode]
-  queue = deque()
-  queue.append(startNode)
-  bfsVisited[startNode] = True
-
-  while len(queue):
-    curNode = queue.popleft()
-
-    for nextNode in graph[curNode]:
-      if bfsVisited[nextNode]:
-        continue
-      bfsArr.append(nextNode)
-      bfsVisited[nextNode] = True
-      queue.append(nextNode)
-
-  print(" ".join(list(map(str, bfsArr))))
-
-bfs(startN)
-
-
+print(" ".join(list(map(str, bfsArr))))
