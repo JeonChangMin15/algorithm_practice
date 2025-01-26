@@ -1,34 +1,30 @@
 n, caseN = list(map(int, input().split()))
 arr = []
-
-
-caseNums = []
+test = []
 
 for i in range(n):
-  nameStr, maxN = input().split()
-  arr.append([nameStr, int(maxN)])
+  s,v = input().split()
+  arr.append([s, int(v)])
 
 for i in range(caseN):
-  caseNums.append(int(input()))
+  test.append(int(input()))
 
 answer = []
 
-for num in caseNums:
-  start = 0
-  end = n - 1
-  target = 0
+for val in test:
+  lt = 0
+  rt = n -1
+  index = float("inf")
 
-  while start <= end:
-    mid = (start + end) // 2
-    val = arr[mid][1]
+  while lt <= rt:
+    mid = (lt + rt) //2
 
-    if num > val:
-      start = mid + 1
+    if arr[mid][1] >= val:
+      rt = mid - 1
+      index = min(index, mid)
+    else:
+      lt = mid + 1
 
-    if num <= val:
-      end = mid - 1
-      target = mid
-      
-  answer.append(arr[target][0])
+  answer.append(arr[index][0])
 
 print("\n".join(answer))
