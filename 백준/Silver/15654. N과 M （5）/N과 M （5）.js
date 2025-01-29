@@ -5,25 +5,30 @@ const input = require("fs")
 
 const solution = (input) => {
   const [n, sizeN] = input[0].split(" ").map((v) => Number(v));
-  const nums = input[1].split(" ").map((v) => Number(v));
+  const nums = input[1]
+    .split(" ")
+    .map((v) => Number(v))
+    .sort((a, b) => a - b);
 
-  nums.sort((a, b) => a - b);
+  const answer = [];
 
   const dfs = (arr) => {
-    if (arr.length == sizeN) {
-      console.log(arr.join(" "));
+    if (arr.length === sizeN) {
+      answer.push(arr.join(" "));
       return;
     }
 
-    for (const num of nums) {
-      if (arr.includes(num)) continue;
-      arr.push(num);
+    for (let i = 0; i < n; i++) {
+      if (arr.includes(nums[i])) continue;
+      arr.push(nums[i]);
       dfs(arr);
       arr.pop();
     }
   };
 
   dfs([]);
+
+  console.log(answer.join("\n"));
 };
 
 solution(input);
