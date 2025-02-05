@@ -1,33 +1,32 @@
 import heapq
 
-cityN, lineN = list(map(int, input().split()))
-graph = {}
+nodeN, lineN = list(map(int, input().split()))
+check = list(map(int, input().split()))
+check[nodeN-1] = 0
 
-for i in range(cityN):
-  graph[i] = []
-
-canVisited = list(map(int, input().split()))
-canVisited[-1] = 0
+graph = [[] for _ in range(nodeN)]
 
 for i in range(lineN):
-  n1, n2, dist = list(map(int, input().split()))
-  graph[n1].append([dist, n2])
-  graph[n2].append([dist, n1])
+  n1, n2, t = list(map(int, input().split()))
+  graph[n1].append([n2, t])
+  graph[n2].append([n1, t])
+
+dist = [float('inf')]*nodeN
+dist[0] = 0
 
 queue = []
-cityDist = [float('inf')] * cityN
-cityDist[0] = 0
-
-heapq.heappush(queue, [0, 0])
+heapq.heappush(queue, [0,0])
 
 while len(queue):
-  curDist, curCity = heapq.heappop(queue)
-  if curDist > cityDist[curCity]:
+  curNode, t = heapq.heappop(queue)
+
+  if dist[curNode] < t:
     continue
 
-  for nextDist, nextCity in graph[curCity]:
-    if canVisited[nextCity] == 0 and curDist + nextDist < cityDist[nextCity]:
-      heapq.heappush(queue, [curDist + nextDist, nextCity])
-      cityDist[nextCity] = curDist + nextDist
+  for nextNode, t2 in graph[curNode]:
+    totalT = t + t2
+    if totalT < dist[nextNode] and check[nextNode] == 0:
+      heapq.heappush(queue, [nextNode, totalT])
+      dist[nextNode] = totalT
 
-print(cityDist[-1] if cityDist[-1] != float('inf') else - 1)
+print(dist[nodeN-1] if dist[nodeN-1] != float('inf') else -1)
