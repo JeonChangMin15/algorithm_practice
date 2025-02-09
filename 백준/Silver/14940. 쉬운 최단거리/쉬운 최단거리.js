@@ -3,10 +3,10 @@ const input = require("fs")
   .trim()
   .split("\n");
 
-// 첫째줄에 rowN, colN이 주어지고 두번째 줄부터 grid가 주어진다
-// 0은 원래 못가는 땅이고 1은 갈 수 있는 땅 2는 목표지점이다.
-// bfs로 시작해서 1이면 가고 해당 지점을 현재 거리에서 +1로 업데이트한다
-// 그렇게 한 다음에 dist에서 갈 수 있는데 0인곳은 -1로 마킹
+// 첫번째줄에 rowN, colN이 주어진다
+// 0은 갈 수없고 1은 갈 수있고 2는 목표 지지점
+// 각 지점에서 목표지점까지 거리를 출력 원래 갈 수 있는데 못가면 -1 출력
+// bfs로 큐에 넣고 상하좌우로 그리드가 1이고 방문안한 지점이면 간다
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
@@ -16,7 +16,6 @@ const solution = (input) => {
   }
 
   const queue = [];
-
   const visited = Array(rowN)
     .fill(0)
     .map((v) => Array(colN).fill(false));
@@ -35,14 +34,14 @@ const solution = (input) => {
   }
 
   const dirs = [
-    [1, 0],
     [-1, 0],
-    [0, 1],
+    [1, 0],
     [0, -1],
+    [0, 1],
   ];
 
   while (queue.length) {
-    const [x, y, curDist] = queue.shift();
+    const [x, y, d] = queue.shift();
 
     for (const [dx, dy] of dirs) {
       const nextX = x + dx;
@@ -56,8 +55,8 @@ const solution = (input) => {
         grid[nextX][nextY] === 1;
 
       if (isValid) {
-        queue.push([nextX, nextY, curDist + 1]);
-        dist[nextX][nextY] = curDist + 1;
+        queue.push([nextX, nextY, d + 1]);
+        dist[nextX][nextY] = d + 1;
         visited[nextX][nextY] = true;
       }
     }
@@ -70,10 +69,8 @@ const solution = (input) => {
       }
     }
   }
-
-  for (let i = 0; i < rowN; i++) {
-    console.log(dist[i].join(" "));
-  }
+  const answer = dist.map((v) => v.join(" ")).join("\n");
+  console.log(answer);
 };
 
 solution(input);
