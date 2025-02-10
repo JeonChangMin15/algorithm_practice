@@ -1,15 +1,17 @@
-n, sizeN = list(map(int, input().split()))
+n, combN = list(map(int,input().split()))
 
-def dfs(arr, start):
-  if len(arr) == sizeN:
-    print(" ".join(list(map(str, arr))))
+answer = []
+
+def backtrack(arr, start):
+  if len(arr) == combN:
+    answer.append(" ".join(list(map(str, arr))))
     return
 
   for i in range(start, n+1):
-    if i in arr:
-      continue
     arr.append(i)
-    dfs(arr, i+1)
+    backtrack(arr, i + 1)
     arr.pop()
 
-dfs([], 1)
+backtrack([], 1)
+
+print("\n".join(answer))
