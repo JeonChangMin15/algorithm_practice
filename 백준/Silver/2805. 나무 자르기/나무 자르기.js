@@ -5,25 +5,27 @@ const input = require("fs")
   .map((line) => line.replace(/\r/, ""));
 
 const solution = (input) => {
-  const [treeN, targetLen] = input[0].split(" ").map((v) => Number(v));
+  const [n, targetLen] = input[0].split(" ").map((v) => Number(v));
   const arr = input[1].split(" ").map((v) => Number(v));
 
-  let start = 0;
-  let end = Math.max(...arr);
+  let lt = 1;
+  let rt = Math.max(...arr);
+
   let answer = 0;
 
-  while (start <= end) {
-    const mid = Math.floor((start + end) / 2);
-    let resLen = 0;
+  while (lt <= rt) {
+    const mid = Math.floor((lt + rt) / 2);
+    let res = 0;
+
     arr.forEach((v) => {
-      if (v > mid) resLen += v - mid;
+      if (v > mid) res += v - mid;
     });
 
-    if (resLen >= targetLen) {
-      answer = mid;
-      start = mid + 1;
+    if (res >= targetLen) {
+      lt = mid + 1;
+      answer = Math.max(answer, mid);
     } else {
-      end = mid - 1;
+      rt = mid - 1;
     }
   }
 
