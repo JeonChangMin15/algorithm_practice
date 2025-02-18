@@ -4,31 +4,28 @@ const input = require("fs")
   .split("\n");
 
 const solution = (input) => {
-  const cityN = Number(input[0]);
+  const n = Number(input[0]);
   const arr = input[1].split(" ").map((v) => Number(v));
-  const totalMoney = Number(input[2]);
+  const totalMax = Number(input[2]);
 
-  let start = 1;
-  let end = Math.max(...arr);
-  let answer = 1;
+  let lt = 1;
+  let rt = Math.max(...arr);
+  let answer = 0;
 
-  while (start <= end) {
-    let curMoney = Math.floor((start + end) / 2);
-    let needTotal = 0;
+  while (lt <= rt) {
+    const mid = Math.floor((lt + rt) / 2);
+    let sum = 0;
 
     arr.forEach((val) => {
-      if (val < curMoney) {
-        needTotal += val;
-      } else {
-        needTotal += curMoney;
-      }
+      if (mid >= val) sum += val;
+      else sum += mid;
     });
 
-    if (needTotal <= totalMoney) {
-      answer = Math.max(answer, curMoney);
-      start = curMoney + 1;
+    if (sum <= totalMax) {
+      answer = Math.max(mid, answer);
+      lt = mid + 1;
     } else {
-      end = curMoney - 1;
+      rt = mid - 1;
     }
   }
 
