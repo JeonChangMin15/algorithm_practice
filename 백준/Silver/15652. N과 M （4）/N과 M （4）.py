@@ -1,15 +1,19 @@
-n, sizeN = list(map(int, input().split()))
+n, combN = list(map(int, input().split()))
 
-def dfs(arr):
-  if len(arr) == sizeN:
-    print(" ".join(list(map(str, arr))))
+answer = []
+
+def backTrack(arr, lastNum):
+  if len(arr) == combN:
+    answer.append(" ".join(list(map(str, arr))))
     return
 
   for i in range(1, n+1):
-    minNum = arr[-1] if len(arr) > 0 else 0
-    if i >= minNum:
-      arr.append(i)
-      dfs(arr)
-      arr.pop()
+    if i < lastNum:
+      continue
+    arr.append(i)
+    backTrack(arr, i)
+    arr.pop()
 
-dfs([])
+backTrack([], 0)
+
+print("\n".join(answer))
