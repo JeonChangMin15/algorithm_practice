@@ -4,27 +4,25 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 5원, 2원으로 최소한의 동전의 개수를 구한다
-// 만약 거슬러 줄 수 없다면 -1을 출력
-// 1. 5로 나눈 몫을 구한다.
-// 2. for문을 몫부터 0까지 -1씩 감소하면서 나머지가 짝수면 바로 리턴한다
-// 3. 만약 0까지 나머지가 끝까지 홀수면 -1
-
+// 2원, 5원으로 거스름돈을 준다. 동전의 개수는 무한대고 동전의 갯수가 최소가 되도록 거슬러 준다
+// 첫번째줄에 거스름돈 N이 주어지고 만약 안되면 -1을 출력한다
+// 먼저 5원짜리를 최대 갯수를 구하고 해당 액수를 제외한 금액에서 2원으로 가능하면 된다
 const solution = (input) => {
   const money = Number(input[0]);
-  const n = parseInt(money / 5);
-  let cnt = -1;
+  let answer = -1;
+  let fiveWonCoin = Math.floor(money / 5);
 
-  for (let i = n; i >= 0; i--) {
-    const res = money - i * 5;
+  while (fiveWonCoin >= 0) {
+    const res = money - fiveWonCoin * 5;
     if (res % 2 === 0) {
-      cnt = i + parseInt(res / 2);
-      console.log(cnt);
-      return;
+      answer = fiveWonCoin + res / 2;
+      break;
+    } else {
+      fiveWonCoin -= 1;
     }
   }
 
-  console.log(-1);
+  console.log(answer);
 };
 
 solution(input);
