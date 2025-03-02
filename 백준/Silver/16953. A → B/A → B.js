@@ -1,35 +1,35 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
-// 첫번째줄에 숫자 2개가 주어지고 A를 B로 바꾸는데 연산의 최솟값에 1을 더한값을 출력
-// 2를 곱하거나 10을 곱하고 1을 더하는 연산 두가지가 있다.
-// bfs로 풀면될거같은데
 const solution = (input) => {
   const [start, target] = input[0].split(" ").map((v) => Number(v));
+  const nums = new Set();
+  const queue = [[start, 1]];
 
-  const queue = [[start, 0]];
-
+  let answer = -1;
+  const limit = 10 ** 9;
   while (queue.length) {
-    const [value, cnt] = queue.shift();
+    const [val, cnt] = queue.shift();
 
-    if (value === target) {
-      console.log(cnt + 1);
-      return;
+    if (val === target) {
+      answer = cnt;
+      break;
     }
 
-    if (value * 10 + 1 <= target) {
-      queue.push([value * 10 + 1, cnt + 1]);
+    if (val * 2 <= limit && !nums.has(val * 2)) {
+      queue.push([val * 2, cnt + 1]);
+      nums.add(val * 2);
     }
 
-    if (value * 2 <= target) {
-      queue.push([value * 2, cnt + 1]);
+    if (val * 10 + 1 <= limit && !nums.has(val * 10 + 1)) {
+      queue.push([val * 10 + 1, cnt + 1]);
+      nums.add(val * 10 + 1);
     }
   }
 
-  console.log(-1);
+  console.log(answer);
 };
 
 solution(input);
