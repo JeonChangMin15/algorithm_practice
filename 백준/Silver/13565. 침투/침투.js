@@ -4,52 +4,44 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// row가 0인지점에만 dfs로 탐색을 한다
-// visited를 만들고 rowN-1 지점에 도착하면 true로 한다
-// 0이 통하고 1은 전류가 안통한다
-// 도착하면 YES, 아니면 NO를 출력한다.
+// 첫번째줄에 rowN, colN 주어지고 그 다음줄부터 간격없는 그리드가 주어진다
+// 0이면 지나가고 1은 못지나간다
+// for문으로 [0][colN]을 탐색하면서 visit를 찍으면서 만약 지점의 x가 rowN-1 이면 YES 바꾼다
+
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
 
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= rowN; i++) {
     grid.push(input[i].split("").map((v) => Number(v)));
   }
+  let answer = "NO";
+  const dirs = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
 
-  let isValid = false;
+  const dfs = (x, y) => {
+    if (x < 0 || x >= rowN || y < 0 || y >= colN || grid[x][y] === 1) return;
 
-  const dfs = (row, col) => {
-    if (
-      row < 0 ||
-      row >= rowN ||
-      col < 0 ||
-      col >= colN ||
-      grid[row][col] === 1
-    )
-      return;
-
-    grid[row][col] = 1;
-
-    if (row === rowN - 1) {
-      isValid = true;
+    if (x === rowN - 1) {
+      answer = "YES";
       return;
     }
+    grid[x][y] = 1;
 
-    dfs(row + 1, col);
-    dfs(row - 1, col);
-    dfs(row, col + 1);
-    dfs(row, col - 1);
+    for (const [dx, dy] of dirs) {
+      dfs(x + dx, y + dy);
+    }
   };
 
   for (let i = 0; i < colN; i++) {
     dfs(0, i);
   }
 
-  if (isValid) {
-    console.log("YES");
-  } else {
-    console.log("NO");
-  }
+  console.log(answer);
 };
 
 solution(input);
