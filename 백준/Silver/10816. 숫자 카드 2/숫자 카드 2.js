@@ -5,47 +5,51 @@ const input = require("fs")
   .map((line) => line.replace(/\r/, ""));
 
 const solution = (input) => {
-  const cardN = Number(input[0]);
-  const cards = input[1].split(" ").map((v) => Number(v));
+  const n = Number(input[0]);
+  const cards = input[1]
+    .split(" ")
+    .map((v) => Number(v))
+    .sort((a, b) => a - b);
+
   const testN = Number(input[2]);
-  const testCase = input[3].split(" ").map((v) => Number(v));
-
-  cards.sort((a, b) => a - b);
-
-  const value = {};
-
-  cards.forEach((v) => {
-    if (!value[v]) {
-      value[v] = 1;
-    } else {
-      value[v] += 1;
-    }
-  });
-
+  const testCases = input[3].split(" ").map((v) => Number(v));
   const answer = [];
+  const numObj = {};
+  for (const val of cards) {
+    if (numObj[val]) {
+      numObj[val] += 1;
+    } else {
+      numObj[val] = 1;
+    }
+  }
 
-  for (let i = 0; i < testN; i++) {
-    const target = testCase[i];
+  const checkCount = (value) => {
     let lt = 0;
-    let rt = cardN - 1;
-
+    let rt = n - 1;
     let cnt = 0;
 
     while (lt <= rt) {
       const mid = Math.floor((lt + rt) / 2);
-      if (target === cards[mid]) {
-        cnt = value[target];
+
+      if (value === cards[mid]) {
+        cnt = numObj[value];
         break;
       }
 
-      if (cards[mid] < target) {
+      if (value > cards[mid]) {
         lt = mid + 1;
-      } else {
+      }
+
+      if (value < cards[mid]) {
         rt = mid - 1;
       }
     }
 
-    answer.push(cnt);
+    return cnt;
+  };
+
+  for (const testVal of testCases) {
+    answer.push(checkCount(testVal));
   }
 
   console.log(answer.join(" "));
