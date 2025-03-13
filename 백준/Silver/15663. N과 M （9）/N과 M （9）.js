@@ -12,12 +12,14 @@ const solution = (input) => {
     .sort((a, b) => a - b);
 
   const answer = [];
+  const set = new Set();
 
   const backTrack = (arr) => {
     if (arr.length === combN) {
       const str = arr.map((v) => nums[v]).join(" ");
-      if (!answer.includes(str)) {
+      if (!set.has(str)) {
         answer.push(str);
+        set.add(str);
       }
       return;
     }
