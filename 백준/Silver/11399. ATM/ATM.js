@@ -4,27 +4,23 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에는 사람의 수가 주어지고 두번째줄에는 각 사람마다 걸리는 시간이 주어진다
-// 걸리는 시간을 오름차순으로 정렬하고 걸린 시간을 prev이라는 변수와 자기가 걸린시간을 넣는다
-// 그리고 prev에 자기가 걸린시간을 더하면된다
+// 오름차순으로 넣고 이전 시간이랑 본인시간을  total타임에 넣어서 계산
 const solution = (input) => {
   const n = Number(input[0]);
-
   const times = input[1]
     .split(" ")
     .map((v) => Number(v))
     .sort((a, b) => a - b);
 
-  let prevTime = 0;
-  let total = 0;
+  let prev = 0;
+  let answer = 0;
 
-  for (let i = 0; i < times.length; i++) {
-    const cur = times[i];
-    total += prevTime + cur;
-    prevTime += cur;
+  for (const time of times) {
+    answer += prev + time;
+    prev += time;
   }
 
-  console.log(total);
+  console.log(answer);
 };
 
 solution(input);
