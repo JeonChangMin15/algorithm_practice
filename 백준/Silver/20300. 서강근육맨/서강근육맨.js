@@ -1,39 +1,34 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
-
-// 한번에 최대 2개를 고를 수 있다. 마지막에 하나 남으면 하나 사용
-// 근손실은 두개골라서 최소값들의 최대를 해야된다.
-// 오름차순으로 하고 만약 홀수면 마지막을 빼고 아니면 양끝을 더해서 최대값s
-// 양끝을 더하는거보다
-
+// 첫번째줄에 갯수 N이 주어진다
+// 두번째줄에 운동기구들 근손실이 주어진다
+// 한번에 최대 두개를 들고 두개의 합이 근손실이다
+// 근소실 정도가 M을 넘지않도록 하고 싶고 해당값 최솟값을 구해라
+// 만약 운동기구의 근손실을 오름차순으로 정렬을 한다
+// 그리고나서 만약 운동기구수가 홀수면 맨 끝에 있는걸 팝을해서 해당 근손실을 min으로 둔다
+// 그게 짝수면 n/2-1 까지 양끝을 더한값을 max로 비교하면 된다
 const solution = (input) => {
   const n = Number(input[0]);
+  const arr = input[1]
+    .split(" ")
+    .map((v) => BigInt(v)) // ← BigInt로 변환
+    .sort((a, b) => (a < b ? -1 : 1)); // ← BigInt 정렬 주의
 
-  const weight = input[1].split(" ").map((v) => BigInt(v));
-  weight.sort((a, b) => (a < b ? -1 : 1));
+  let answer = n % 2 === 0 ? BigInt(0) : arr.pop();
+  const lastIndex = Math.floor(n / 2) - 1;
 
-  let max = 0;
-  if (n % 2 === 1) max = weight.pop();
-
-  let lt = 0;
-  let rt = weight.length - 1;
-
-  while (lt <= rt) {
-    const n1 = weight[lt];
-    const n2 = weight[rt];
-
-    const sum = n1 + n2;
-
-    if (max < sum) max = sum;
-
-    lt++;
-    rt--;
+  for (let i = 0; i <= lastIndex; i++) {
+    const protinLose = arr[i] + arr[arr.length - i - 1];
+    if (protinLose > answer) {
+      answer = protinLose;
+    }
   }
 
-  console.log(String(max));
+  console.log(String(answer)); // ← BigInt 출력 시 문자열로
 };
 
 solution(input);
