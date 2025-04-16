@@ -4,27 +4,30 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 숫자가 n이 주어지고 1부터 N까지의 수로 주어진 순열을 사전순으로 출력
-// backtracking으로 한다.
+// 첫번째줄에 N이주이지고 중복없는 순열을 하나씩 출력한다
+// 먼저 백트래킹으로 1부터 N까지 넣고 배열 길이가 N이면 join해서
+// 전체 배열에다가 추가해주면된다.
 const solution = (input) => {
   const n = Number(input[0]);
+  const answer = [];
 
-  const dfs = (arr) => {
+  const backTracking = (arr) => {
     if (arr.length === n) {
-      const nums = arr.join(" ");
-      console.log(nums);
+      answer.push(arr.join(" "));
       return;
     }
 
     for (let i = 1; i <= n; i++) {
       if (arr.includes(i)) continue;
       arr.push(i);
-      dfs(arr);
+      backTracking(arr);
       arr.pop();
     }
   };
 
-  dfs([]);
+  backTracking([]);
+
+  console.log(answer.join("\n"));
 };
 
 solution(input);
