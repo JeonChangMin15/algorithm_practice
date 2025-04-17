@@ -4,43 +4,42 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 총 F층 건물이고 G층이 목표지점이고 S지점에서 시작을한다
-// U D밖에 없고 G층에 도착하려면 최소 몇번을 눌러야하는지 알아야한다
-// 만약 못가면 use the stairs를 출력한다
-// bfs와 visited를 사용하면 되는 문제다
-/// 첫줄은 F S G U D가 주어진다 1층부터 F층까지 있는 건물이라고 생각하면 된다
+// F층으로 이루어진 건물을 G층으로 가려고한다
+// 지금있는곳은 S층이고 U, D 버튼을 눌러서 이동이 가능하다
+// 1층부터 시작이다
+// 첫번째줄에 F,S,G,U,D 가 주어진다
+// 최소 몇번 버튼을 눌러야하는지 최솟값을 출력
+// 이동할 수 없으면 use the stairs를 출력
+// bfs로 u,d를 visited와 갈 수있는지 체킹하면서 구하면된다
 const solution = (input) => {
-  const [maxFloor, start, target, up, down] = input[0]
+  const [lastFloor, start, end, up, down] = input[0]
     .split(" ")
     .map((v) => Number(v));
 
+  const visited = Array(lastFloor + 1).fill(false);
   const queue = [[start, 0]];
-  const visited = Array(maxFloor + 1).fill(false);
-  visited[start] = true;
+  let answer = "use the stairs";
 
   while (queue.length) {
-    const [currentFloor, cnt] = queue.shift();
+    const [cur, cnt] = queue.shift();
 
-    const upNext = currentFloor + up;
-    const downNext = currentFloor - down;
-
-    if (currentFloor === target) {
-      console.log(cnt);
-      return;
+    if (cur === end) {
+      answer = cnt;
+      break;
     }
 
-    if (upNext <= maxFloor && !visited[upNext]) {
-      queue.push([upNext, cnt + 1]);
-      visited[upNext] = true;
+    if (cur + up <= lastFloor && !visited[cur + up]) {
+      queue.push([cur + up, cnt + 1]);
+      visited[cur + up] = true;
     }
 
-    if (downNext >= 1 && !visited[downNext]) {
-      queue.push([downNext, cnt + 1]);
-      visited[downNext] = true;
+    if (cur - down >= 1 && !visited[cur - down]) {
+      queue.push([cur - down, cnt + 1]);
+      visited[cur - down] = true;
     }
   }
 
-  console.log("use the stairs");
+  console.log(answer);
 };
 
 solution(input);
