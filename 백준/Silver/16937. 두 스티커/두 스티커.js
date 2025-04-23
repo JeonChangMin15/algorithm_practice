@@ -4,71 +4,47 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-
 const solution = (input) => {
-  const [N, M] = input[0]
-    .split(" ")
-    .map((v) => Number(v))
-    .sort((a, b) => a - b);
+  const [height, width] = input[0].split(" ").map((v) => Number(v));
+  const stickerN = Number(input[1]);
+  const sticker = [];
 
-  const n = Number(input[1]);
-  const arr = [];
-  let max = 0;
-
-  for (let i = 2; i < input.length; i++) {
-    arr.push(
-      input[i]
-        .split(" ")
-        .map((v) => Number(v))
-        .sort((a, b) => a - b)
-    );
+  for (let i = 2; i < 2 + stickerN; i++) {
+    const [n1, n2] = input[i].split(" ").map((v) => Number(v));
+    sticker.push([n1, n2]);
   }
 
-  if (arr.length === 1) {
-    console.log(0);
-    return;
-  }
+  let answer = 0;
+  // 조건을 다시 생각하자
+  // 먼저 스티커중 가장 긴부분이 모눈종이보다 크면 스킵
+  // 모눈종이는 고정시키고 스티커를 돌린다
+  // 거기서 sh1+sh2 <= height, Math.max(sw1, sw2) <= width
+  // sw1+sw2 <= width, Math.max(sh1, sh2) <= height
+  for (let i = 0; i < stickerN - 1; i++) {
+    for (let j = i + 1; j < stickerN; j++) {
+      const [stickerH1, stickerW1] = sticker[i];
+      const [stickerH2, stickerW2] = sticker[j];
 
-  for (let i = 0; i < arr.length - 1; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      const [n1, n2] = arr[i];
-      const [n3, n4] = arr[j];
+      const cases = [
+        [stickerH1, stickerW1, stickerH2, stickerW2],
+        [stickerW1, stickerH1, stickerH2, stickerW2],
+        [stickerH1, stickerW1, stickerW2, stickerH2],
+        [stickerW1, stickerH1, stickerW2, stickerH2],
+      ];
 
-      const len1 = n1 + n3;
-      const len2 = Math.max(n2, n4);
+      for (const [sh1, sw1, sh2, sw2] of cases) {
+        if (sh1 + sh2 <= height && Math.max(sw1, sw2) <= width) {
+          answer = Math.max(answer, sh1 * sw1 + sh2 * sw2);
+        }
 
-      const len3 = Math.max(n1, n3);
-      const len4 = n2 + n4;
-
-      const len5 = n1 + n4;
-      const len6 = Math.max(n2, n3);
-
-      const len7 = Math.max(n1, n4);
-      const len8 = n2 + n3;
-
-      if ((len1 <= N && len2 <= M) || (len2 <= N && len1 <= M)) {
-        max = Math.max(max, n1 * n2 + n3 * n4);
-        continue;
-      }
-
-      if ((len3 <= N && len4 <= M) || (len4 <= N && len3 <= M)) {
-        max = Math.max(max, n1 * n2 + n3 * n4);
-        continue;
-      }
-
-      if ((len5 <= N && len6 <= M) || (len6 <= N && len5 <= M)) {
-        max = Math.max(max, n1 * n2 + n3 * n4);
-        continue;
-      }
-
-      if ((len7 <= N && len8 <= M) || (len8 <= N && len7 <= M)) {
-        max = Math.max(max, n1 * n2 + n3 * n4);
-        continue;
+        if (sw1 + sw2 <= width && Math.max(sh1, sh2) <= height) {
+          answer = Math.max(answer, sh1 * sw1 + sh2 * sw2);
+        }
       }
     }
   }
 
-  console.log(max);
+  console.log(answer);
 };
 
 solution(input);
