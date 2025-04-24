@@ -1,20 +1,15 @@
-// const input = require("fs")
-//   .readFileSync("example.txt", "utf8")
-//   .trim()
-//   .split("\n")
-//   .map((line) => line.replace(/\r/, ""));
-
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에는 rowN, colN이 주어진다
-// 2번 위치에서 시작하고 345 음식을 먼저 찾아야한다
-// 음식까지의 최단거리를 출력하면 된다
-// 1만 아니면 갈 수 있고 bfs로 마킹하면서 해결하면 되는 문제다
-// TAK출력 안되면 NIE 출력하면된다.
+// 첫번째줄에 rowN, colN이 주어진다
+// 0은 빈칸 1은 장애물, 2는 시작점 3,4,5는 음식이다
+// 음식까지 도달이 가능하면 최단거리를 출력 TAK을 먼저 출력
+// 만약 도달이 불가능하면 NIE를 출력한다
+// 먼저 이중 for문으로 시작점을 큐에 넣고 3,4,5면 break하고
+// visited로 마킹하면서 가면된다
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
@@ -24,14 +19,9 @@ const solution = (input) => {
   }
 
   const queue = [];
-
-  for (let i = 0; i < rowN; i++) {
-    for (let j = 0; j < colN; j++) {
-      if (grid[i][j] === 2) {
-        queue.push([i, j, 0]);
-      }
-    }
-  }
+  const visited = Array(rowN)
+    .fill(0)
+    .map((v) => Array(colN).fill(false));
 
   const dirs = [
     [-1, 0],
@@ -40,19 +30,26 @@ const solution = (input) => {
     [0, 1],
   ];
 
-  const visited = Array(rowN)
-    .fill(0)
-    .map((v) => Array(colN).fill(false));
+  for (let i = 0; i < rowN; i++) {
+    for (let j = 0; j < colN; j++) {
+      if (grid[i][j] === 2) {
+        queue.push([i, j, 0]);
+        visited[i][j] = true;
+      }
+    }
+  }
 
-  const food = [3, 4, 5];
+  const fruit = [3, 4, 5];
+  let isReach = false;
+  let minDist = Infinity;
 
   while (queue.length) {
     const [x, y, dist] = queue.shift();
 
-    if (food.includes(grid[x][y])) {
-      console.log("TAK");
-      console.log(dist);
-      return;
+    if (fruit.includes(grid[x][y])) {
+      isReach = true;
+      minDist = dist;
+      break;
     }
 
     for (const [dx, dy] of dirs) {
@@ -73,7 +70,12 @@ const solution = (input) => {
     }
   }
 
-  console.log("NIE");
+  if (isReach) {
+    console.log("TAK");
+    console.log(minDist);
+  } else {
+    console.log("NIE");
+  }
 };
 
 solution(input);
