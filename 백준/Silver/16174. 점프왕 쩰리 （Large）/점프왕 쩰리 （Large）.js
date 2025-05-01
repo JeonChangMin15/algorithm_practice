@@ -4,56 +4,52 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 정사각형 그리드가 주어진다. 시작점은 0,0
-// 이동 가능한 방향은 오른쪽과 아래 가장 오른쪽 아래칸에 도착하면 종료
-// 한번에 이동할 수 있는 칸은 현재 밟고 있는 칸에 쓰여 있는 수 만큼이다
-// 만약 끝까지 도달하면 HaruHaru 도달 못한다면 Hing
-// 첫째줄에 n 그다음줄 부터는 그리드가 주어진다.
-// bfs로 다음 칸에 갈 수 있으면 넣고 visited로 찍어준다.
-// 만약 현재 포지션이 -1이면 하루하루 출력하고 return, 안되면 Hing 출력
+// 0,0에서 시작 정사각형 그리드
+// 오른쪽과 아래로만 이동 가능하다
+// 가장 끝에 도달하면 게임은 종료
+// 한번에 이동 가능한 칸수는 현재 밟고 있는 칸에 쓰여 있는 수
+// 맨 아래 칸에 -1로 쓰여 있고 나머지 칸에 0부터 100 이하 정수
+// 도달할 수 있으면 HaruHaru 불가능하면 Hing
+// bfs로 해당 위치에서 +grid[x][y] 만큼 움직이는데 방문한 지점과 그리드 크기를 유효
+// 하면 가면된다 끝지점에 도달하면 HaruHaru를 할당하면된다
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
-  const visited = Array(n)
-    .fill(0)
-    .map((v) => Array(n).fill(false));
 
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= n; i++) {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  const queue = [[0, 0, grid[0][0]]];
+  let answer = "Hing";
+
+  const queue = [[0, 0]];
+  const visited = Array(n)
+    .fill(0)
+    .map((v) => Array(n).fill(false));
+  visited[0][0] = true;
 
   while (queue.length) {
-    const [x, y, jump] = queue.shift();
-    if (jump === -1) {
-      console.log("HaruHaru");
-      return;
+    const [x, y] = queue.shift();
+
+    if (grid[x][y] === -1) {
+      answer = "HaruHaru";
+      break;
     }
 
-    const dirs = [
-      [0, jump],
-      [jump, 0],
-    ];
+    const jumpN = grid[x][y];
 
-    for (let [dx, dy] of dirs) {
-      const nextX = x + dx;
-      const nextY = y + dy;
-      const isValid =
-        nextX >= 0 &&
-        nextX < n &&
-        nextY >= 0 &&
-        nextY < n &&
-        !visited[nextX][nextY];
+    if (x + jumpN < n && !visited[x + jumpN][y]) {
+      queue.push([x + jumpN, y]);
+      visited[x + jumpN][y] = true;
+    }
 
-      if (isValid) {
-        queue.push([nextX, nextY, grid[nextX][nextY]]);
-        visited[nextX][nextY] = true;
-      }
+    if (y + jumpN < n && !visited[x][y + jumpN]) {
+      queue.push([x, y + jumpN]);
+      visited[x][y + jumpN] = true;
     }
   }
 
-  console.log("Hing");
+  console.log(answer);
 };
 
 solution(input);
