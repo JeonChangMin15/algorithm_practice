@@ -4,34 +4,30 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 조합 콤비네이션 문제 mCn m개중 n개를 뽑는 조합이다
-// mCn = m-1Cn-1 + m-1Cn 점화식을 이용하는 문제다.
 const solution = (input) => {
-  const arr = [];
+  const n = Number(input[0]);
+  const testCase = [];
 
-  const dp = Array(30)
-    .fill(0)
-    .map((_) => Array(30).fill(0));
-
-  for (let i = 1; i < input.length; i++) {
-    arr.push(input[i].split(" ").map((v) => Number(v)));
+  for (let i = 1; i <= n; i++) {
+    testCase.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  for (let i = 0; i < 30; i++) {
-    for (let j = 0; j < 30; j++) {
-      if (i === 0 || j === 0) continue;
-      if (j === 1) {
-        dp[i][j] = i;
-      } else if (i === j) {
-        dp[i][j] = 1;
-      } else if (i > j) {
-        dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+  for (const [leftN, rightN] of testCase) {
+    const dp = Array(rightN + 1)
+      .fill(0)
+      .map((v) => Array(rightN + 1).fill(1));
+
+    for (let i = 2; i <= rightN; i++) {
+      dp[1][i] = i;
+    }
+
+    for (let i = 2; i <= leftN; i++) {
+      for (let j = i + 1; j <= rightN; j++) {
+        dp[i][j] = dp[i - 1][j - 1] + dp[i][j - 1];
       }
     }
-  }
 
-  for (let [m, n] of arr) {
-    console.log(dp[n][m]);
+    console.log(dp[leftN][rightN]);
   }
 };
 
