@@ -1,41 +1,31 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
-
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
 const solution = (input) => {
   const n = Number(input[0]);
-  const time = [];
-  const cost = [];
+  const info = [];
 
-  for (let i = 1; i < input.length; i++) {
-    const [t, m] = input[i].split(" ").map((v) => Number(v));
-    time.push(t);
-    cost.push(m);
+  for (let i = 1; i <= n; i++) {
+    info.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  let max = 0;
+  let answer = 0;
 
-  const dfs = (day, price) => {
+  const backTrack = (day, cost) => {
     if (day > n) return;
-    if (day === n - 1 && time[n - 1] === 1) {
-      max = Math.max(price + cost[day], max);
-      return;
-    }
+    answer = Math.max(cost, answer);
 
-    max = Math.max(price, max);
-
-    for (let i = day + time[day]; i <= n; i++) {
-      dfs(i, price + cost[day]);
+    for (let i = day; i < n; i++) {
+      const [time, money] = info[i];
+      backTrack(i + time, cost + money);
     }
   };
 
-  for (let i = 0; i < n; i++) {
-    dfs(i, 0);
-  }
-
-  console.log(max);
+  backTrack(0, 0);
+  console.log(answer);
 };
 
 solution(input);
