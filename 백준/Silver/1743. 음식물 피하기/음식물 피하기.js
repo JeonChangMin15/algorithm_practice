@@ -1,29 +1,28 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
-// 첫째줄에 rowN, colN, 음식물 수가 주어진다
-// 그다음줄 부터 음식물 좌표가 주어지는데 각각 -1씩해서 마킹을 해야된다
-// dfs로 덩어리가 가장 큰걸 구하면 된다.
+// 첫번째줄에 rowN, colN, 음식물 수가 주어진다
+// 한줄씩 음식물 좌표가 주어지는데 -1씩 해주면된다
+// 상하좌우 붙어있는것들중에서 가장큰 덩어리를 출력
+// dfs로 탐색하면서 이중 for문으로 음식물이면 탐색을 시작한다
+// 지나간곳은 0으로 마킹하면된다
 const solution = (input) => {
-  const [rowN, colN, n] = input[0].split(" ").map((v) => Number(v));
+  const [rowN, colN, foodN] = input[0].split(" ").map((v) => Number(v));
   const grid = Array(rowN)
     .fill(0)
-    .map((v) => Array(colN).fill(false));
+    .map((v) => Array(colN).fill(0));
 
-  for (let i = 1; i < input.length; i++) {
-    const [row, col] = input[i].split(" ").map((v) => Number(v));
-    grid[row - 1][col - 1] = true;
+  for (let i = 1; i <= foodN; i++) {
+    const [x, y] = input[i].split(" ").map((v) => Number(v));
+    grid[x - 1][y - 1] = 1;
   }
 
-  let max = 0;
-
   const dfs = (x, y) => {
-    if (x < 0 || x >= rowN || y < 0 || y >= colN || !grid[x][y]) return 0;
+    if (x < 0 || x >= rowN || y < 0 || y >= colN || grid[x][y] === 0) return 0;
+    grid[x][y] = 0;
 
-    grid[x][y] = false;
     const up = dfs(x - 1, y);
     const down = dfs(x + 1, y);
     const left = dfs(x, y - 1);
@@ -32,15 +31,16 @@ const solution = (input) => {
     return 1 + up + down + left + right;
   };
 
+  let answer = 0;
+
   for (let i = 0; i < rowN; i++) {
     for (let j = 0; j < colN; j++) {
-      if (!grid[i][j]) continue;
-      const area = dfs(i, j);
-      max = Math.max(max, area);
+      if (grid[i][j] === 0) continue;
+      answer = Math.max(answer, dfs(i, j));
     }
   }
 
-  console.log(max);
+  console.log(answer);
 };
 
 solution(input);
