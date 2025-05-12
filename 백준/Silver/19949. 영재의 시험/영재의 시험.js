@@ -4,23 +4,23 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 1부터 5까지 숫자를 넣는데 3개 연속으로 같은 숫자를 넣지 않는 방식으로 조합을 만든다
-// 정답이 주어졌을때 5점 이상인 경우의 수를 구해라
-// 숫자를 집어넣을때 앞에 숫자 2개랑 다르면 넣고 아니면 continue 하는 방식으로 하면된다
+// 5 25 125 625 3200
+// 1부터 5까지 조합을 만드는데 넣는 숫자가
+// i-2, i-1번째 값과 같지 않게 조합을 만든다
+// 그렇게 하고나서 5점 이상이면 카운팅을 한다
 const solution = (input) => {
-  const answerArr = input[0].split(" ").map((v) => Number(v));
-  let cnt = 0;
+  const answerSheet = input[0].split(" ").map((v) => Number(v));
+  let answer = 0;
 
-  const dfs = (arr) => {
+  const backTracking = (arr) => {
     if (arr.length === 10) {
-      let answer = 0;
+      let cnt = 0;
 
-      arr.forEach((val, index) => {
-        if (val === answerArr[index]) answer += 1;
-      });
+      for (let i = 0; i < 10; i++) {
+        if (arr[i] === answerSheet[i]) cnt += 1;
+      }
 
-      if (answer >= 5) cnt += 1;
-
+      if (cnt >= 5) answer += 1;
       return;
     }
 
@@ -28,20 +28,17 @@ const solution = (input) => {
       if (arr.length < 2) {
         arr.push(i);
       } else {
-        if (arr[arr.length - 2] === i && arr[arr.length - 1] === i) {
-          continue;
-        }
+        const len = arr.length;
+        if (arr[len - 2] === arr[len - 1] && arr[len - 1] === i) continue;
         arr.push(i);
       }
-
-      dfs(arr);
+      backTracking(arr);
       arr.pop();
     }
   };
 
-  dfs([]);
-
-  console.log(cnt);
+  backTracking([]);
+  console.log(answer);
 };
 
 solution(input);
