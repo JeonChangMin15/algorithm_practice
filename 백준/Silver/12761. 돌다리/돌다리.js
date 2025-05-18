@@ -4,43 +4,42 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 스카이콩콩의 힘 A,B 현재위치 목표위치가 주어진다
-// +1, -1 이동가능하다. -+A, -+B, 현재위치의 A,B배 위치로 이동가능하다
-// 최소한의 횟수를 구해야된다
-// bfs로 케이스
+// bfs로 너비 탐색을 진행하면된다
+// 방문한 지점은 visited로 마킹
+// 첫번째줄에 powerA, powerB, start, end가 주어진다
+// 움직일 수 있는건 +1, -1, A,B만큼 좌우로 그리고 A배, B배 위치로 이동가능
+// 0부터 100000이고 최소 이동횟수 출력
 const solution = (input) => {
-  const [A, B, current, target] = input[0].split(" ").map((v) => Number(v));
-  const dirs = [1, -1, -A, A, -B, B];
-
-  const queue = [[current, 0]];
+  const [powerA, powerB, start, end] = input[0]
+    .split(" ")
+    .map((v) => Number(v));
 
   const visited = Array(100001).fill(false);
-  visited[current] = true;
+  visited[start] = true;
+  const queue = [[start, 0]];
 
   while (queue.length) {
-    const [position, cnt] = queue.shift();
-
-    if (position === target) {
+    const [pos, cnt] = queue.shift();
+    if (pos === end) {
       console.log(cnt);
-      return;
+      break;
     }
 
-    if (position * A <= 100001 && !visited[position * A]) {
-      queue.push([position * A, cnt + 1]);
-      visited[position * A] = true;
-    }
+    const nextPosArr = [
+      pos * powerA,
+      pos * powerB,
+      pos + powerA,
+      pos - powerA,
+      pos + powerB,
+      pos - powerB,
+      pos + 1,
+      pos - 1,
+    ];
 
-    if (position * B <= 100001 && !visited[position * B]) {
-      queue.push([position * B, cnt + 1]);
-      visited[position * B] = true;
-    }
-
-    for (let dir of dirs) {
-      const next = position + dir;
-
-      if (next >= 0 && !visited[next]) {
-        queue.push([next, cnt + 1]);
-        visited[next] = true;
+    for (const nextPos of nextPosArr) {
+      if (nextPos >= 0 && nextPos <= 100000 && !visited[nextPos]) {
+        queue.push([nextPos, cnt + 1]);
+        visited[nextPos] = true;
       }
     }
   }
