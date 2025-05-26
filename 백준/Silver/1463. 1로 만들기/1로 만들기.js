@@ -4,24 +4,22 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-/**
- * dp[0] = 0
- * dp[1] = 0
- * i / 2, i/3 둘 중 하나라도 자연수면 저 중에 dp[i/2], dp[i/3]중 작은값 + 1
- * 만약 둘 다 자연수가 아니면? dp[i-1] + 1
- */
+// 1보다 큰 자연수 하나가 주어진다
+// 3으로 나눌 수 있으면 3으로 나눈다
+// 2으로 나눌 수 있으면 2로 나눈다
+// 1을 뺀다
+// 백트래킹은 결국 dp로 치환이 가능하다
+// dp[1] = 0, dp[i] = Math.min() divideTwo = i%2 === 0? dp[i%2]? Infinity
 const solution = (input) => {
   const n = Number(input[0]);
-
   const dp = Array(n + 1).fill(0);
 
   for (let i = 2; i <= n; i++) {
-    const n1 = i / 2 === Math.floor(i / 2) ? dp[i / 2] + 1 : Infinity;
-    const n2 = i / 3 === Math.floor(i / 3) ? dp[i / 3] + 1 : Infinity;
+    const dividTwo = i % 2 === 0 ? dp[i / 2] + 1 : Infinity;
+    const dividThree = i % 3 === 0 ? dp[i / 3] + 1 : Infinity;
+    const minus = dp[i - 1] + 1;
 
-    const min = Math.min(n1, n2, dp[i - 1] + 1);
-
-    dp[i] = min;
+    dp[i] = Math.min(dividTwo, dividThree, minus);
   }
 
   console.log(dp[n]);
