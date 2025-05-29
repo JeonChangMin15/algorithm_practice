@@ -1,15 +1,16 @@
-// const input = require("fs")
-//   .readFileSync("example.txt", "utf8")
-//   .trim()
-//   .split("\n");
-
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
+// 첫번째줄에 rowN, colN, 선택할 격자갯수
+// 선택한 칸의 수를 모두 더한값의 최댓값
+// 단 선택한 두칸이 인접하면 안된다 -> 상하좌우
+// 일단 0부터 row*col-1까지을 중복없는 백트레킹을 한다
+// 갯수가 채워지면 거기서 인접한게 하나도 없으면 합을 구해준다
 const solution = (input) => {
-  const [rowN, colN, cnt] = input[0].split(" ").map((v) => Number(v));
+  const [rowN, colN, pickN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
 
   for (let i = 1; i <= rowN; i++) {
@@ -18,44 +19,44 @@ const solution = (input) => {
 
   let answer = -Infinity;
 
-  const dfs = (arr, start) => {
-    if (arr.length === cnt) {
+  const backTrack = (arr, start) => {
+    if (arr.length === pickN) {
+      const coor = arr.map((v) => [Math.floor(v / colN), v % colN]);
       let isValid = true;
-      for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = i + 1; j < arr.length; j++) {
-          let x1 = Math.floor(arr[i] / colN);
-          let y1 = arr[i] % colN;
-          let x2 = Math.floor(arr[j] / colN);
-          let y2 = arr[j] % colN;
-          let diffX = Math.abs(x1 - x2);
-          let diffY = Math.abs(y1 - y2);
-          if ((diffX === 0 && diffY === 1) || (diffX === 1 && diffY === 0)) {
+
+      for (let i = 0; i < coor.length - 1; i++) {
+        for (let j = i + 1; j < coor.length; j++) {
+          const [x1, y1] = coor[i];
+          const [x2, y2] = coor[j];
+          if (Math.abs(x1 - x2) === 0 && Math.abs(y1 - y2) === 1) {
+            isValid = false;
+          }
+          if (Math.abs(x1 - x2) === 1 && Math.abs(y1 - y2) === 0) {
             isValid = false;
           }
         }
       }
 
       if (isValid) {
-        let cur = 0;
-        arr.forEach((val) => {
-          let x = Math.floor(val / colN);
-          let y = val % colN;
-          cur += grid[x][y];
-        });
-        answer = Math.max(cur, answer);
+        let total = 0;
+        for (const [x, y] of coor) {
+          total += grid[x][y];
+        }
+        answer = Math.max(total, answer);
       }
+
       return;
     }
 
     for (let i = start; i < rowN * colN; i++) {
+      if (arr.includes(i)) continue;
       arr.push(i);
-      dfs(arr, i + 1);
+      backTrack(arr, i + 1);
       arr.pop();
     }
   };
 
-  dfs([], 0);
-
+  backTrack([], 0);
   console.log(answer);
 };
 
