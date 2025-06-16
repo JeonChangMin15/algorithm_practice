@@ -1,26 +1,27 @@
 from collections import deque
 
 start, end = list(map(int, input().split()))
-
 queue = deque()
 queue.append([start, 0])
+maxPos = 100000
 visited = [False]*100001
 visited[start] = True
 
 while len(queue):
-  position, time = queue.popleft()
-  if position == end:
+  pos, time = queue.popleft()
+
+  if pos == end:
     print(time)
     break
 
-  if position*2 <= 100000 and not visited[position*2]:
-    queue.append([position*2, time])
-    visited[position*2] = True
+  if pos*2 <= maxPos and not visited[pos*2]:
+    visited[pos*2] = True
+    queue.append([pos*2, time])
 
-  if position-1 >= 0 and not visited[position-1]:
-    queue.append([position-1, time+1])
-    visited[position-1] = True
+  if pos-1 >= 0 and not visited[pos-1]:
+    visited[pos-1] = True
+    queue.append([pos-1, time + 1])
 
-  if position +1 <= 100000 and not visited[position+1]:
-    queue.append([position+1, time+1])
-    visited[position+1] = True
+  if pos+1 <= maxPos and not visited[pos+1]:
+    visited[pos+1] = True
+    queue.append([pos+1, time+1])
