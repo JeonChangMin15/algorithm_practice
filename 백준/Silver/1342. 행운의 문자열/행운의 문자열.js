@@ -1,48 +1,50 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에 문자열이 주어지고 문자열을 재배치해서 인접해 있는 모든 문자가 같지 않으면 카운팅을한다
-// 백트래킹으로 문자열을 더했는지 체킹하면서 더하고 문자열이 원래 문자열길이가 되면 검사를하면된다?
+// 첫번째줄에 문자열이 하나 주어진다
+// 문자를 재배치해서 인접해 있는 문자가 같지 않다면 행운의 문자열로 취급
+// 서로다른 행운의 문자열의 갯수를 출력한다
+// 백트래킹으로 모든 경우의 수를 구한다
 const solution = (input) => {
-  const orginString = input[0];
-  const n = input[0].length;
-  const isContain = Array(n).fill(false);
-  let cnt = 0;
-  const unique = new Set();
+  const str = input[0];
+  const n = str.length;
 
-  const dfs = (curStr) => {
-    if (curStr.length === n) {
+  const set = new Set();
+
+  const backTrack = (arr) => {
+    if (arr.length === n) {
       let isValid = true;
+      const curStr = arr.map((v) => str[v]).join("");
+      let prev = curStr[0];
 
-      for (let i = 0; i < n; i++) {
-        if (i - 1 >= 0 && curStr[i] === curStr[i - 1]) {
+      for (let i = 1; i < n; i++) {
+        if (prev !== curStr[i]) {
+          prev = curStr[i];
+        } else {
           isValid = false;
-        }
-
-        if (i + 1 < n && curStr[i] === curStr[i + 1]) {
-          isValid = false;
+          break;
         }
       }
 
-      if (isValid && !unique.has(curStr)) {
-        cnt += 1;
-        unique.add(curStr);
-      }
+      if (isValid) set.add(curStr);
+
+      return;
     }
 
     for (let i = 0; i < n; i++) {
-      if (isContain[i]) continue;
-      isContain[i] = true;
-      dfs(curStr + orginString[i]);
-      isContain[i] = false;
+      if (arr.includes(i)) continue;
+      arr.push(i);
+      backTrack(arr);
+      arr.pop();
     }
   };
 
-  dfs([]);
+  backTrack([]);
 
-  console.log(cnt);
+  console.log(set.size);
 };
 
 solution(input);
