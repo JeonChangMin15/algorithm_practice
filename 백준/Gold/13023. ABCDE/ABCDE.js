@@ -4,37 +4,35 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
+// 첫번째줄에 사람수와 관계수가 주어진다
+// 두번째줄부터 관계들이 주어진다
+// 4 depth 관계가 있는지 구해야된다
+// 각 지점마다 다 dfs로 체킹을 해봐야된다
 const solution = (input) => {
   const [peopleN, relationN] = input[0].split(" ").map((v) => Number(v));
+  const grid = Array(peopleN)
+    .fill(0)
+    .map((v) => []);
 
-  const graph = {};
-
-  for (let i = 0; i < peopleN; i++) {
-    graph[i] = [];
-  }
-
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= relationN; i++) {
     const [n1, n2] = input[i].split(" ").map((v) => Number(v));
-    graph[n1].push(n2);
-    graph[n2].push(n1);
+    grid[n1].push(n2);
+    grid[n2].push(n1);
   }
-
   const visited = Array(peopleN).fill(false);
-  let isValidRelation = false;
+  let isValid = false;
 
   const dfs = (node, depth) => {
+    if (visited[node]) return;
     visited[node] = true;
 
     if (depth === 4) {
-      isValidRelation = true;
+      isValid = true;
       return;
     }
 
-    for (let i = 0; i < graph[node].length; i++) {
-      const nextNode = graph[node][i];
-      if (!visited[nextNode]) {
-        dfs(nextNode, depth + 1);
-      }
+    for (const nextNode of grid[node]) {
+      dfs(nextNode, depth + 1);
     }
 
     visited[node] = false;
@@ -44,11 +42,7 @@ const solution = (input) => {
     dfs(i, 0);
   }
 
-  if (isValidRelation) {
-    console.log(1);
-  } else {
-    console.log(0);
-  }
+  console.log(isValid ? 1 : 0);
 };
 
 solution(input);
