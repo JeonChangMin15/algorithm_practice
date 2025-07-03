@@ -1,44 +1,49 @@
 from collections import deque
 
-n, k = list(map(int, input().split()))
+n, jumpN = list(map(int, input().split()))
+
 left = list(map(int, input()))
 right = list(map(int, input()))
 leftVisit = [False]*n
 rightVisit = [False]*n
-leftVisit[0] = True
 
 queue = deque()
-queue.append([0,0,0])
+queue.append([0, 0, 'left'])
+leftVisit[0] = True
 
-answer = 0
+isSuccess = False
 
 while len(queue):
-  pos, time, val = queue.popleft() 
-  if pos >= n or pos+k >= n:
-    answer = 1
+  pos, time, side = queue.popleft()
+
+  if pos +1 >= n or pos + jumpN >= n:
+    isSuccess = True
     break
 
-  if val == 0:
-    if pos-1 > time and left[pos-1] == 1 and not leftVisit[pos-1]:
-      queue.append([pos-1, time+1, 0])
+  if side == 'left':
+    if pos-1>time and not leftVisit[pos-1] and left[pos-1]:
+      queue.append([pos-1, time +1, 'left'])
       leftVisit[pos-1] = True
-    if (pos+k < n and right[pos+k] == 1 and not rightVisit[pos+k]):
-      queue.append([pos+k, time+1, 1])
-      rightVisit[pos+k] = True
-    if left[pos+1] == 1 and not leftVisit[pos+1]:
-      queue.append([pos+1, time+1, 0])
+
+    if pos+1>time and pos+1 <n and not leftVisit[pos+1] and left[pos+1]:
+      queue.append([pos+1, time+1, 'left'])
       leftVisit[pos+1] = True
 
-  
-  if val == 1:
-    if pos-1 > time and right[pos-1] == 1 and not rightVisit[pos-1]:
-      queue.append([pos-1, time+1, 1])
+    if pos+jumpN>time and pos+jumpN <n and not rightVisit[pos+ jumpN] and right[pos + jumpN]:
+      queue.append([pos+jumpN, time+1, 'right'])
+      rightVisit[pos+ jumpN] = True
+
+  if side == 'right':
+    if pos-1>time and not rightVisit[pos-1] and right[pos-1]:
+      queue.append([pos-1, time +1, 'right'])
       rightVisit[pos-1] = True
-    if (pos +k < n and left[pos+k] == 1 and not leftVisit[pos+k]):
-      queue.append([pos+k, time+1, 0])
-      leftVisit[pos+k] = True
-    if right[pos+1] == 1 and not rightVisit[pos+1]:
-      queue.append([pos+1, time+1, 1])
+
+    if pos+1>time and pos+1 <n and not rightVisit[pos+1] and right[pos+1]:
+      queue.append([pos+1, time+1, 'right'])
       rightVisit[pos+1] = True
 
-print(answer)
+    if pos+jumpN>time and pos+jumpN <n and not leftVisit[pos+ jumpN] and left[pos + jumpN]:
+      queue.append([pos+jumpN, time+1, 'left'])
+      leftVisit[pos+ jumpN] = True
+
+print(1 if isSuccess else 0)
