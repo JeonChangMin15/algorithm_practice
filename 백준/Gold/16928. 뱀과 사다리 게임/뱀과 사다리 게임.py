@@ -1,39 +1,45 @@
 from collections import deque
 
-val1, val2 = list(map(int, input().split()))
-stepArr = [0]*101
+stairN, snakeN = list(map(int, input().split()))
+stairPos = []
+stairInfo = {}
+snakePos = []
+snakeInfo = {}
 
-for i in range(val1):
-  x, y = list(map(int, input().split())) 
-  stepArr[x] = y
+for i in range(stairN):
+  s, e = map(int, input().split())
+  stairPos.append(s)
+  stairInfo[s] = e
 
-for i in range(val2):
-  u, v = list(map(int, input().split()))
-  stepArr[u] = v
-
-visited = [float('inf')]*101
-visited[1] = 0
+for i in range(snakeN):
+  s, e = map(int, input().split())
+  snakePos.append(s)
+  snakeInfo[s] = e
 
 queue = deque()
 queue.append([1, 0])
-dice = [1,2,3,4,5,6]
+visited = [float('inf')]*101
+visited[1] = 0
+answer = float('inf')
 
 while len(queue):
-  pos, cnt = queue.popleft()
-
+  pos, cnt = queue.popleft() 
   if pos == 100:
-    visited[100] = min(visited[100], cnt)
+    answer = min(answer, cnt)
+
+  if pos in stairPos and cnt <= visited[stairInfo[pos]]:
+    queue.append([stairInfo[pos], cnt])
+    visited[stairInfo[pos]] = cnt
     continue
-
-  if stepArr[pos] != 0 and visited[stepArr[pos]] >= cnt:
-    queue.append([stepArr[pos], cnt])
-    visited[stepArr[pos]] = cnt
+  
+  if pos in snakePos and cnt <= visited[snakeInfo[pos]]:
+    queue.append([snakeInfo[pos], cnt])
+    visited[snakeInfo[pos]] = cnt
     continue
+  
+  for i in range(1, 7):
+    if i + pos <= 100 and cnt + 1 < visited[i+pos] and pos not in snakePos and pos not in stairPos:
+      queue.append([i+pos, cnt + 1])
+      visited[i+pos] = cnt + 1
 
-  for dx in dice:
-    nextPos = pos + dx
-    if nextPos <= 100 and stepArr[pos] == 0 and visited[nextPos] > cnt +1:
-      queue.append([nextPos, cnt + 1])
-      visited[nextPos] = cnt + 1
-
-print(visited[100])
+print(answer)
