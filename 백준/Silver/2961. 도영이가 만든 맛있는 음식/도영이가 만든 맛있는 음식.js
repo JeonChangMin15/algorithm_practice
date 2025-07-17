@@ -4,45 +4,45 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 재료 N개가 주어지고 재료의 신맛S, 쓴맛B
-// 여러 재료를 이용하면 신맛은 신맛의 곱, 쓴맛은 합
-// 신맛과 쓴맛의 차이를 작게한다
-// 재료는 적어도 하나를 사용한다
-// 조합문제다 재귀함수를 사용하면된다
+// 첫번째줄에 재료의 수가 주어지고
+// 각각 재료의 쓴맛과 단맛이 주어진다
+// 한개 이상의 재료를 선택했을때 해당 재료들의 쓴맛의 곱과 단맛의 곱 차이의
+// 최솟값을 구해라
+// 0부터 n-1 까지 중복없는 순열을 구한후 다 계산해서 구하면된다
 const solution = (input) => {
   const n = Number(input[0]);
-  const score = [];
+  const material = [];
 
-  for (let i = 1; i < input.length; i++) {
-    score.push(input[i].split(" ").map((v) => Number(v)));
+  for (let i = 1; i <= n; i++) {
+    const [s, v] = input[i].split(" ").map((v) => Number(v));
+    material.push([s, v]);
   }
 
   let answer = Infinity;
 
-  const dfs = (arr) => {
-    if (arr.length > n) return;
+  const backTrack = (arr) => {
     if (arr.length > 0) {
-      let a = 1;
-      let b = 0;
+      let t1 = 1;
+      let t2 = 0;
 
-      arr.forEach((index) => {
-        const [n1, n2] = score[index];
-        a *= n1;
-        b += n2;
-      });
-      answer = Math.min(answer, Math.abs(a - b));
+      for (const index of arr) {
+        const [s, v] = material[index];
+        t1 = t1 * s;
+        t2 = t2 + v;
+      }
+
+      answer = Math.min(Math.abs(t1 - t2), answer);
     }
 
     for (let i = 0; i < n; i++) {
-      if (!arr.includes(i)) {
-        arr.push(i);
-        dfs(arr);
-        arr.pop();
-      }
+      if (arr.includes(i)) continue;
+      arr.push(i);
+      backTrack(arr);
+      arr.pop();
     }
   };
 
-  dfs([]);
+  backTrack([]);
 
   console.log(answer);
 };
