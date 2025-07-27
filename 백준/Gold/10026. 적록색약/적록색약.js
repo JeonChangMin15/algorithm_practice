@@ -3,10 +3,6 @@ const input = require("fs")
   .trim()
   .split("\n");
 
-// R, G, B로 이루어진 그리드가 주어진다
-// 적록 색약은 R,G를 똑같이 본다 일반인은 다 구분을 한다
-// 일반인이 봤을때와 적록색약이 봣을때의 구역수를 한줄에 각각 출력한다
-// dfs로 하는데 각각 dfs를 돌려서 답을 구하면 된다
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
@@ -16,61 +12,76 @@ const solution = (input) => {
   }
 
   let normal = 0;
-  const visited = Array(n)
+  let notNormal = 0;
+
+  const normalVisited = Array(n)
     .fill(0)
     .map((v) => Array(n).fill(false));
 
-  const dfs = (x, y, color) => {
+  const notNormalVisited = Array(n)
+    .fill(0)
+    .map((v) => Array(n).fill(false));
+  const dirs = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+  const dfsNormal = (x, y, color) => {
     if (
       x < 0 ||
       x >= n ||
       y < 0 ||
       y >= n ||
-      visited[x][y] ||
-      grid[x][y] !== color
+      grid[x][y] !== color ||
+      normalVisited[x][y]
     )
       return;
+    normalVisited[x][y] = true;
 
-    visited[x][y] = true;
-    dfs(x - 1, y, color);
-    dfs(x + 1, y, color);
-    dfs(x, y - 1, color);
-    dfs(x, y + 1, color);
+    for (const [dx, dy] of dirs) {
+      dfsNormal(x + dx, y + dy, color);
+    }
+  };
+
+  const dfsNotNormal = (x, y, color) => {
+    if (
+      x < 0 ||
+      x >= n ||
+      y < 0 ||
+      y >= n ||
+      grid[x][y] !== color ||
+      notNormalVisited[x][y]
+    )
+      return;
+    notNormalVisited[x][y] = true;
+
+    for (const [dx, dy] of dirs) {
+      dfsNotNormal(x + dx, y + dy, color);
+    }
   };
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (!visited[i][j]) {
-        dfs(i, j, grid[i][j]);
-        normal += 1;
+      if (normalVisited[i][j]) continue;
+      dfsNormal(i, j, grid[i][j]);
+      normal += 1;
+    }
+  }
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (grid[i][j] === "G") {
+        grid[i][j] = "R";
       }
     }
   }
 
-  const secondVisited = Array(n)
-    .fill(0)
-    .map((v) => Array(n).fill(false));
-
-  let notNormal = 0;
-
-  const secondDfs = (x, y, color) => {
-    if (x < 0 || x >= n || y < 0 || y >= n || secondVisited[x][y]) return;
-    if (color === "B" && (grid[x][y] === "R" || grid[x][y] === "G")) return;
-    if ((color === "R" || color === "G") && grid[x][y] === "B") return;
-    secondVisited[x][y] = true;
-
-    secondDfs(x - 1, y, color);
-    secondDfs(x + 1, y, color);
-    secondDfs(x, y - 1, color);
-    secondDfs(x, y + 1, color);
-  };
-
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      if (!secondVisited[i][j]) {
-        notNormal += 1;
-        secondDfs(i, j, grid[i][j]);
-      }
+      if (notNormalVisited[i][j]) continue;
+      dfsNotNormal(i, j, grid[i][j]);
+      notNormal += 1;
     }
   }
 
