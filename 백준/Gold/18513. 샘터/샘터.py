@@ -1,29 +1,27 @@
 from collections import deque
 waterN, houseN = list(map(int, input().split()))
-initial = list(map(int, input().split()))
+waterPos = list(map(int, input().split()))
 
-queue = deque()
 posSet = set()
-for x in initial:
-  queue.append([x, 0])
-  posSet.add(x)
+queue = deque()
 
-total = 0
-cnt = 0
+for i in range(waterN):
+  queue.append([waterPos[i], 0])
+  posSet.add(waterPos[i])
+
 dirs = [-1, 1]
+answer = 0
 
 while len(queue):
-  x, dist = queue.popleft()
-  if dist > 0:
-    total += dist
-    cnt += 1
-
-  if cnt == houseN:
-    print(total)
+  pos, dist = queue.popleft()
+  if len(posSet) >= houseN+waterN:
     break
-  
+
   for dx in dirs:
-    nextX = x + dx
-    if nextX not in posSet:
-      queue.append([nextX, dist + 1])
-      posSet.add(nextX)
+    nextPos = pos + dx
+    if nextPos not in posSet and len(posSet) < houseN+waterN:
+      queue.append([nextPos, dist+1])
+      posSet.add(nextPos)
+      answer += dist+1
+
+print(answer)
