@@ -4,108 +4,82 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
+// 0 빈위치, 1 벽, 2바이러스다
+// 첫번째줄에 rowN, colN이주어지고 그다음부터 그리드다
+// 먼저 삼중 for문으로 해당 포지션이 전부 다 0 이면 일단 벽으로 만든다
+// 그리고 나서 이중 for문으로 바이러스 인 지점을 dfs로 돌리면서 0인곳은 visited로
+// 마킹을 한다. 그리고나서 방문안한 0 지점의 갯수를 카운팅을 해주면된다
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
-  const combination = [];
-  const firstVirusPos = [];
-  const firstWallPos = [];
 
-  for (let i = 1; i < input.length; i++) {
+  for (let i = 1; i <= rowN; i++) {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  for (let i = 0; i < rowN; i++) {
-    for (let j = 0; j < colN; j++) {
-      if (grid[i][j] === 2) {
-        firstVirusPos.push([i, j]);
-      } else if (grid[i][j] === 1) {
-        firstWallPos.push([i, j]);
+  const dfs = (x, y, visited) => {
+    if (x < 0 || x >= rowN || y < 0 || y >= colN) return;
+    if (visited[x][y] || grid[x][y] === 1) return;
+    visited[x][y] = true;
+
+    dfs(x - 1, y, visited);
+    dfs(x + 1, y, visited);
+    dfs(x, y - 1, visited);
+    dfs(x, y + 1, visited);
+  };
+
+  const viriusMove = () => {
+    const visited = Array(rowN)
+      .fill(0)
+      .map((v) => Array(colN).fill(false));
+
+    for (let i = 0; i < rowN; i++) {
+      for (let j = 0; j < colN; j++) {
+        if (grid[i][j] === 2 && !visited[i][j]) {
+          dfs(i, j, visited);
+        }
       }
     }
-  }
+
+    let cnt = 0;
+
+    for (let i = 0; i < rowN; i++) {
+      for (let j = 0; j < colN; j++) {
+        if (grid[i][j] === 0 && !visited[i][j]) {
+          cnt += 1;
+        }
+      }
+    }
+
+    return cnt;
+  };
+
+  let answer = 0;
 
   for (let i = 0; i < rowN * colN; i++) {
     for (let j = 0; j < rowN * colN; j++) {
       for (let k = 0; k < rowN * colN; k++) {
-        if (i !== j && j !== k && i !== k) {
-          combination.push([i, j, k]);
+        const x1 = Math.floor(i / colN);
+        const y1 = i % colN;
+        const x2 = Math.floor(j / colN);
+        const y2 = j % colN;
+        const x3 = Math.floor(k / colN);
+        const y3 = k % colN;
+        const firstG = grid[x1][y1];
+        const secondG = grid[x2][y2];
+        const thridG = grid[x3][y3];
+        const isAllDiff = i !== j && j !== k && i !== k;
+        if (isAllDiff && firstG === 0 && secondG === 0 && thridG === 0) {
+          grid[x1][y1] = 1;
+          grid[x2][y2] = 1;
+          grid[x3][y3] = 1;
+          const cnt = viriusMove();
+          answer = Math.max(cnt, answer);
+          grid[x1][y1] = 0;
+          grid[x2][y2] = 0;
+          grid[x3][y3] = 0;
         }
       }
-    }
-  }
-
-  let answer = 0;
-
-  const bfs = () => {
-    const queue = [...firstVirusPos];
-
-    const dirs = [
-      [-1, 0],
-      [1, 0],
-      [0, 1],
-      [0, -1],
-    ];
-
-    while (queue.length > 0) {
-      const [x, y] = queue.shift();
-
-      for (let [dx, dy] of dirs) {
-        const nextX = x + dx;
-        const nextY = y + dy;
-        const isValid =
-          nextX >= 0 &&
-          nextX < rowN &&
-          nextY >= 0 &&
-          nextY < colN &&
-          grid[nextX][nextY] === 0;
-
-        if (isValid) {
-          grid[nextX][nextY] = 2;
-          queue.push([nextX, nextY]);
-        }
-      }
-    }
-
-    let area = 0;
-
-    for (let i = 0; i < rowN; i++) {
-      for (let j = 0; j < colN; j++) {
-        if (grid[i][j] === 0) {
-          area += 1;
-        }
-      }
-    }
-
-    answer = Math.max(area, answer);
-
-    for (let i = 0; i < rowN; i++) {
-      for (let j = 0; j < colN; j++) {
-        grid[i][j] = 0;
-      }
-    }
-  };
-
-  for (let [pos1, pos2, pos3] of combination) {
-    const [row1, col1] = [Math.floor(pos1 / colN), pos1 % colN];
-    const [row2, col2] = [Math.floor(pos2 / colN), pos2 % colN];
-    const [row3, col3] = [Math.floor(pos3 / colN), pos3 % colN];
-
-    if (
-      grid[row1][col1] === 0 &&
-      grid[row2][col2] === 0 &&
-      grid[row3][col3] === 0
-    ) {
-      grid[row1][col1] = 1;
-      grid[row2][col2] = 1;
-      grid[row3][col3] = 1;
-      bfs();
-      firstVirusPos.forEach((pos) => {
-        grid[pos[0]][pos[1]] = 2;
-      });
-      firstWallPos.forEach((pos) => {
-        grid[pos[0]][pos[1]] = 1;
-      });
     }
   }
 
