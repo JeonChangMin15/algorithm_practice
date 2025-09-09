@@ -1,46 +1,56 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에 N, 두번째줄에 숫자들
-// 세번째줄에 M, 네번째줄에 있는지 확인해야하는 숫자들 리슽
-// 이분탐색으로 두번째 숫자들을 오름차순으로 정렬한 후 네번째줄에 있는 숫자들을 하나씩
-// 탐색한다.
+// 첫번째줄에 숫자의 개수가 주어진다. 두번째줄에는 숫자 참고 목록
+// 세번째줄에 테스트 숫자 갯수, 네번쩨줄에 테스트 숫자 목록
+// 테스트 숫자가 참고목록에 존재하는 테스트하면 된다.
+// 존재하면 1, 없으면 0
+// 숫자 참고목록을 오름차순으로 정렬한 후 하나씩 이분탐색으로 있는지 확인
+
 const solution = (input) => {
-  const n = Number(input[0]);
-  const nums = input[1]
-    .split(" ")
-    .map((v) => Number(v))
-    .sort((a, b) => a - b);
-  const m = Number(input[2]);
-  const testCase = input[3].split(" ").map((v) => Number(v));
+  const lookN = Number(input[0]);
+  const lookList = input[1].split(" ").map((v) => Number(v));
+  const testN = Number(input[2]);
+  const testList = input[3].split(" ").map((v) => Number(v));
+  lookList.sort((a, b) => a - b);
 
-  const answer = [];
-
-  for (const target of testCase) {
+  const testFunc = (target) => {
     let lt = 0;
-    let rt = n - 1;
-    let cur = 0;
+    let rt = lookN - 1;
+    let answer = 0;
 
     while (lt <= rt) {
       const mid = Math.floor((lt + rt) / 2);
-      const value = nums[mid];
+      const curVal = lookList[mid];
 
-      if (value === target) {
-        cur = 1;
+      if (curVal == target) {
+        answer = 1;
         break;
-      } else if (value > target) {
+      }
+
+      if (curVal > target) {
         rt = mid - 1;
-      } else {
+      }
+
+      if (curVal < target) {
         lt = mid + 1;
       }
     }
 
-    answer.push(cur);
+    return answer;
+  };
+
+  let answerArr = [];
+
+  for (let i = 0; i < testN; i++) {
+    const exist = testFunc(testList[i]);
+    answerArr.push(exist);
   }
 
-  console.log(answer.join("\n"));
+  console.log(answerArr.join("\n"));
 };
 
 solution(input);
