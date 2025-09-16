@@ -1,18 +1,17 @@
 from collections import deque
 
-nodeN, lineN = list(map(int, input().split()))
-graph = [[] for _ in range(nodeN+1)]
+computerN, lineN = list(map(int,input().split()))
+graph = [[] for _ in range(computerN+1)]
 
 for i in range(lineN):
-  n1, n2 = map(int, input().split())
+  n1, n2 = list(map(int, input().split()))
   graph[n2].append(n1)
 
 def bfs(startNode):
-  cnt = 1
-  visited = [False]*(nodeN+1)
-  visited[startNode] = True
   queue = deque()
   queue.append(startNode)
+  visited = [False]*(computerN+1)
+  visited[startNode] = True
 
   while len(queue):
     curNode = queue.popleft()
@@ -20,20 +19,21 @@ def bfs(startNode):
     for nextNode in graph[curNode]:
       if visited[nextNode]:
         continue
-      visited[nextNode] = True
       queue.append(nextNode)
-      cnt += 1
+      visited[nextNode] = True
 
-  return cnt
+  return len(list(filter(lambda x: x==True, visited)))
 
-nodeCnt = [0]*(nodeN+1)
-for i in range(1, nodeN+1):
-  nodeCnt[i] = bfs(i)
+arr = [0]*(computerN+1)
+for i in range(1, computerN+1):
+  val = bfs(i)
+  arr[i] = val
 
+maxVal = max(arr)
 answer = []
 
-for i in range(1, nodeN+1):
-  if nodeCnt[i] == max(nodeCnt):
-    answer.append(i)
+for i in range(1, computerN+1):
+  if arr[i] == maxVal:
+    answer.append(str(i))
 
-print(" ".join(list(map(str, answer))))
+print(" ".join(answer))
