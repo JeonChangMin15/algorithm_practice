@@ -4,36 +4,35 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 첫째줄에 선의 갯수와 필요한 선의 개수
-// 가장 길게 자를 수 있는 선분의 길이를 구해라
-// left = 1, right = max()
-// 만약 길이로 나눈 몫들의 합이 타겟보다 크면 선분의 길이를 left = mid +1, 값 갱신
-// 작으면 right = mid - 1
+// 첫번째줄에 랜선의 수, 필요한 랜선의 갯수가 주어지고
+// 그다음줄부터 랜선의 길이가 주어진다
+// 필요한 랜선의 갯수이상으로 가능한 최대 랜선의 길이를 구해라
+// 1부터 가장 큰 랜선의 길이를 두고 이분 탐색으로 몫의 총합이
+// 크거나 같으면 lt = mid+1, 안되면 rt=mid-1로 계산을 해주면된다
 const solution = (input) => {
-  const [n, targetN] = input[0].split(" ").map((v) => Number(v));
+  const [n, needN] = input[0].split(" ").map((v) => Number(v));
   const arr = [];
 
   for (let i = 1; i <= n; i++) {
     arr.push(Number(input[i]));
   }
 
-  let left = 1;
-  let right = Math.max(...arr);
+  let lt = 1;
+  let rt = Math.max(...arr);
   let answer = 1;
 
-  while (left <= right) {
-    let cnt = 0;
-    let mid = Math.floor((left + right) / 2);
+  while (lt <= rt) {
+    let cur = 0;
+    const mid = Math.floor((lt + rt) / 2);
+    for (const len of arr) {
+      cur += Math.floor(len / mid);
+    }
 
-    arr.forEach((v) => {
-      cnt += Math.floor(v / mid);
-    });
-
-    if (cnt >= targetN) {
-      answer = Math.max(answer, mid);
-      left = mid + 1;
+    if (cur >= needN) {
+      lt = mid + 1;
+      answer = mid;
     } else {
-      right = mid - 1;
+      rt = mid - 1;
     }
   }
 
