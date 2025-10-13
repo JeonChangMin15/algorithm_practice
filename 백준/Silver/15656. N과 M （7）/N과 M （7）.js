@@ -13,7 +13,7 @@ const solution = (input) => {
 
   const answer = [];
 
-  const dfs = (arr) => {
+  const backTracking = (arr) => {
     if (arr.length === combN) {
       answer.push(arr.join(" "));
       return;
@@ -21,12 +21,12 @@ const solution = (input) => {
 
     for (let i = 0; i < n; i++) {
       arr.push(nums[i]);
-      dfs(arr);
+      backTracking(arr);
       arr.pop();
     }
   };
 
-  dfs([]);
+  backTracking([]);
 
   console.log(answer.join("\n"));
 };
