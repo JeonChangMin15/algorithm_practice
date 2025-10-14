@@ -1,8 +1,13 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n");
+  .split("\n")
+  .map((line) => line.replace(/\r/, ""));
 
+// 첫번째줄에 rowN, colN이 주어진다
+// 0,0 -> 끝지점까지 최소 거리를 구해라
+// bfs로 상하좌우 탐색하면서 1이면서 최소거리이면 움직이면 된다
+// 답은 +1하면된다
 const solution = (input) => {
   const [rowN, colN] = input[0].split(" ").map((v) => Number(v));
   const grid = [];
@@ -17,6 +22,7 @@ const solution = (input) => {
 
   dist[0][0] = 0;
 
+  const queue = [[0, 0, 0]];
   const dirs = [
     [-1, 0],
     [1, 0],
@@ -24,11 +30,8 @@ const solution = (input) => {
     [0, 1],
   ];
 
-  const queue = [[0, 0, 0]];
-
   while (queue.length) {
     const [x, y, d] = queue.shift();
-
     for (const [dx, dy] of dirs) {
       const nextX = x + dx;
       const nextY = y + dy;
