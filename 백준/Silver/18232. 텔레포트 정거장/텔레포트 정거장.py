@@ -1,35 +1,35 @@
 from collections import deque
 
-nodeN, lineN = list(map(int, input().split()))
-startNode, endNode = list(map(int, input().split()))
-grid = [[] for _ in range(nodeN+1)]
+n, lineN = list(map(int, input().split()))
+start, end = list(map(int, input().split()))
 
-for i in range(lineN):
-  n1, n2 = map(int, input().split())
-  grid[n1].append(n2)
-  grid[n2].append(n1)
+graph = [[] for _ in range(n+1)]
 
-visited = [False]*(nodeN+1)
-visited[startNode] = True
+for _ in range(lineN):
+  n1, n2 = list(map(int, input().split()))
+  graph[n1].append(n2)
+  graph[n2].append(n1)
+
+visited = [False]*(n+1)
+visited[start] = 0
 queue = deque()
-queue.append([startNode, 0])
+queue.append([start, 0])
 
 while len(queue):
-  curNode, time = queue.popleft()
-
-  if curNode == endNode:
-    print(time)
+  curNode, curTime = queue.popleft()
+  if curNode == end:
+    print(curTime)
     break
 
-  if curNode-1 >=1 and not visited[curNode-1]:
+  if curNode-1>=1 and not visited[curNode-1]:
     visited[curNode-1] = True
-    queue.append([curNode-1, time+1])
+    queue.append([curNode-1, curTime+1])
 
-  if curNode+1 <=nodeN and not visited[curNode+1]:
+  if curNode+1 <= n and not visited[curNode+1]:
     visited[curNode+1] = True
-    queue.append([curNode+1, time+1])
+    queue.append([curNode+1, curTime+1])
 
-  for nextNode in grid[curNode]:
+  for nextNode in graph[curNode]:
     if not visited[nextNode]:
-      queue.append([nextNode, time+1])
       visited[nextNode] = True
+      queue.append([nextNode, curTime+1])
