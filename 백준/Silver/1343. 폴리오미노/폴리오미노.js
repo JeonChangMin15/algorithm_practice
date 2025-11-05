@@ -4,65 +4,64 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 문자열이 주어지고 AAAA, BB로 X를 채울거다.
-// 사전순으로 가장 앞서는 답을 출력하고 덮을 수 없으면 -1을 출력한다
-// for문을 돌리면서 x면 개수를 카운팅하고 .이면 여태 카운팅한걸
-// 계산을 한다. 갯수에서 4로 나눈 나머지가 2,0이면 몫만큼 AAAA, 나머지가 있으면 BB
-// 만약 1, 3이면 break박고 false
-// .이면 갯수 초기화하고 .을 넣어주면된다. 마지막에 갯수가 남아있으면 처리해줘야한다
+// AAAA BB로 X를 전부 덮는다
+// .은 그대로 두고 사전순으로 한다
+// 만약 안되면 -1을 출력한다
+// for문으로 X의 갯수를 카운팅을 한다
+// 그러다가 .이 나오면 X를 탐색을한다
+// 2로 나눈 나머지가 1이면 -1로 바꾸고 끝
+// 4로 나눈 몫만큼 AAAA더하고 나머지가 2면 BB를 더해준다
+// X개수를 0으로 초기화한다
+// 그리고 마지막에 for문이 끝나고 한번더 따로 검사를 해준다
 const solution = (input) => {
   const testStr = input[0];
-
-  let Xcnt = 0;
-  let isValid = true;
   let answer = "";
+  let xCnt = 0;
 
   for (let i = 0; i < testStr.length; i++) {
-    const curStr = testStr[i];
-    if (curStr === "X") {
-      Xcnt += 1;
-    } else {
-      if (Xcnt % 4 === 1 || Xcnt % 4 === 3) {
-        isValid = false;
-        break;
-      } else {
-        const aCount = Math.floor(Xcnt / 4);
-        const bCount = Math.floor(Xcnt % 4);
-        if (aCount > 0) {
-          for (let a = 0; a < aCount; a++) {
-            answer += "AAAA";
-          }
-        }
-
-        if (bCount > 0) {
-          answer += "BB";
-        }
-
-        Xcnt = 0;
-        answer += ".";
-      }
+    const cur = testStr[i];
+    if (cur === "X") {
+      xCnt += 1;
+      continue;
     }
+
+    if (xCnt % 2 === 1) {
+      answer = -1;
+      break;
+    }
+    const aaaaCnt = Math.floor(xCnt / 4);
+    const bbCnt = xCnt % 4;
+
+    for (let i = 0; i < aaaaCnt; i++) {
+      answer += "AAAA";
+    }
+
+    if (bbCnt === 2) {
+      answer += "BB";
+    }
+
+    answer += ".";
+    xCnt = 0;
   }
 
-  if (Xcnt > 0) {
-    if (Xcnt % 4 === 1 || Xcnt % 4 === 3) {
-      isValid = false;
+  if (xCnt > 0) {
+    if (xCnt % 2 === 1) {
+      answer = -1;
     } else {
-      const aCount = Math.floor(Xcnt / 4);
-      const bCount = Math.floor(Xcnt % 4);
-      if (aCount > 0) {
-        for (let a = 0; a < aCount; a++) {
-          answer += "AAAA";
-        }
+      const aaaaCnt = Math.floor(xCnt / 4);
+      const bbCnt = xCnt % 4;
+
+      for (let i = 0; i < aaaaCnt; i++) {
+        answer += "AAAA";
       }
 
-      if (bCount > 0) {
+      if (bbCnt === 2) {
         answer += "BB";
       }
     }
   }
 
-  console.log(isValid ? answer : -1);
+  console.log(answer);
 };
 
 solution(input);
