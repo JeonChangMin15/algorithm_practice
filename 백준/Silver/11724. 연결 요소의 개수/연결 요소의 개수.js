@@ -5,8 +5,8 @@ const input = require("fs")
   .map((line) => line.replace(/\r/, ""));
 
 const solution = (input) => {
-  const [nodeN, lineN] = input[0].split(" ").map((v) => Number(v));
-  const graph = Array(nodeN + 1)
+  const [cityN, lineN] = input[0].split(" ").map((v) => Number(v));
+  const graph = Array(cityN + 1)
     .fill(0)
     .map((v) => []);
 
@@ -17,18 +17,18 @@ const solution = (input) => {
   }
 
   let answer = 0;
-  const visited = Array(nodeN + 1).fill(false);
+  const visited = Array(cityN + 1).fill(false);
 
-  const dfs = (node) => {
-    if (visited[node]) return;
-    visited[node] = true;
+  const dfs = (curCity) => {
+    visited[curCity] = true;
 
-    for (const nextNode of graph[node]) {
-      dfs(nextNode);
+    for (const nextCity of graph[curCity]) {
+      if (visited[nextCity]) continue;
+      dfs(nextCity);
     }
   };
 
-  for (let i = 1; i <= nodeN; i++) {
+  for (let i = 1; i <= cityN; i++) {
     if (visited[i]) continue;
     dfs(i);
     answer += 1;
