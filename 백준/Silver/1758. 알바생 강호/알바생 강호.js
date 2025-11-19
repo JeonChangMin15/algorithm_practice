@@ -1,9 +1,11 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
+// 첫번째줄에 인원수가 주어진다
+// money - i 액수만큼 받는다
+// 금액을 내림차순으로 정렬한후 Math.max(money-i, 0)을 더해주면 된다
 const solution = (input) => {
   const n = Number(input[0]);
   const arr = [];
@@ -12,13 +14,14 @@ const solution = (input) => {
     arr.push(Number(input[i]));
   }
   arr.sort((a, b) => b - a);
-  let total = 0;
+
+  let answer = 0;
 
   for (let i = 0; i < n; i++) {
-    const tip = arr[i] - i;
-    if (tip > 0) total += tip;
+    answer += Math.max(arr[i] - i, 0);
   }
-  console.log(total);
+
+  console.log(answer);
 };
 
 solution(input);
