@@ -1,13 +1,12 @@
 const input = require("fs")
   .readFileSync("/dev/stdin", "utf8")
   .trim()
-  .split("\n")
-  .map((line) => line.replace(/\r/, ""));
+  .split("\n");
 
-// 첫번째줄에 동기수 두번째줄에 관계수가 주어진다
-// 2번째줄부터 관계가 주어진다. 친구와 친구의 친구까지 초대를 한다
-// 초대할 사람의 수를 구해라
-// bfs로 depth가 2이하면 추가를하면 된다
+// 첫번째줄에 사람수, 두번째줄에 관계수다
+// 3번째부터 관계가 주어지고 양방향이다
+// 1로 연결된 모든 사람의 수를 구하면된다
+// bfs로 탐색하면서 visited로 마킹하면된다
 const solution = (input) => {
   const peopleN = Number(input[0]);
   const lineN = Number(input[1]);
@@ -21,27 +20,23 @@ const solution = (input) => {
     graph[n2].push(n1);
   }
 
-  const queue = [[1, 0]];
   const visited = Array(peopleN + 1).fill(false);
   visited[1] = true;
 
-  let answer = 0;
+  const queue = [[1, 0]];
 
   while (queue.length) {
-    const [person, depth] = queue.shift();
+    const [curPerson, relation] = queue.shift();
+    if (relation > 1) break;
 
-    if (depth && depth < 3) {
-      answer += 1;
-    }
-
-    for (const nextPerson of graph[person]) {
+    for (const nextPerson of graph[curPerson]) {
       if (visited[nextPerson]) continue;
-      queue.push([nextPerson, depth + 1]);
+      queue.push([nextPerson, relation + 1]);
       visited[nextPerson] = true;
     }
   }
 
-  console.log(answer);
+  console.log(visited.filter((v) => v === true).length - 1);
 };
 
 solution(input);
