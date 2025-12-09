@@ -5,24 +5,26 @@ const input = require("fs")
   .map((line) => line.replace(/\r/, ""));
 
 const solution = (input) => {
-  const [n, price] = input[0].split(" ").map((v) => Number(v));
-  const coins = [];
+  const [n, money] = input[0].split(" ").map((v) => Number(v));
+  const arr = [];
 
   for (let i = 1; i <= n; i++) {
-    coins.push(Number(input[i]));
+    arr.push(Number(input[i]));
   }
 
-  coins.sort((a, b) => b - a);
-
-  let curPrice = price;
+  arr.sort((a, b) => b - a);
+  let resMoney = money;
   let answer = 0;
-  let index = 0;
+  let moneyIndex = 0;
 
-  while (curPrice > 0) {
-    const cnt = Math.floor(curPrice / coins[index]);
-    answer += cnt;
-    curPrice -= cnt * coins[index];
-    index += 1;
+  while (resMoney > 0) {
+    const val = Math.floor(resMoney / arr[moneyIndex]);
+    if (val > 0) {
+      answer += val;
+      resMoney -= val * arr[moneyIndex];
+    }
+
+    moneyIndex += 1;
   }
 
   console.log(answer);
