@@ -4,22 +4,18 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 1보다 큰 자연수 하나가 주어진다
-// 3으로 나눌 수 있으면 3으로 나눈다
-// 2으로 나눌 수 있으면 2로 나눈다
-// 1을 뺀다
-// 백트래킹은 결국 dp로 치환이 가능하다
-// dp[1] = 0, dp[i] = Math.min() divideTwo = i%2 === 0? dp[i%2]? Infinity
+// 2로 나누거나, 3로 나누거나 -1을 진행해서
+// 1로 만들 수 있는 최소 횟수를 출력해라
+// 1부터 시작해서 dp[i-1], dp[i/2], dp[i-3]의 최솟값에 +1을 해서 누적
 const solution = (input) => {
   const n = Number(input[0]);
   const dp = Array(n + 1).fill(0);
 
   for (let i = 2; i <= n; i++) {
-    const dividTwo = i % 2 === 0 ? dp[i / 2] + 1 : Infinity;
-    const dividThree = i % 3 === 0 ? dp[i / 3] + 1 : Infinity;
-    const minus = dp[i - 1] + 1;
-
-    dp[i] = Math.min(dividTwo, dividThree, minus);
+    const prev1 = dp[i - 1];
+    const prev2 = i % 2 === 0 ? dp[i / 2] : Infinity;
+    const prev3 = i % 3 === 0 ? dp[i / 3] : Infinity;
+    dp[i] = Math.min(prev1, prev2, prev3) + 1;
   }
 
   console.log(dp[n]);
