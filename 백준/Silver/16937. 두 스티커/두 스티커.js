@@ -4,41 +4,43 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
+// height, width가 종이가 있고 스티커가 주어진다
+// 2개를 붙이는데 스티커를 90도 회전 시키는것은 가능하다
+// 90도 회전 시키는것은 가능하고 종이를 벗어나는것은 안된다
+// 2개를 붙엿을때 최대 넓이를 구하고 2개를 붙일 수 없다면 0을 출력
+// 두개를 붙엿을때 가능한지 여부를 판단해야한다
+// 일단 먼저 돌린걸 각 돌리기 케이스 4가지를 생각을 한 후 에
+// 가로정렬 세로 정렬 중 하나라도 만족하면 넣는다
 const solution = (input) => {
   const [height, width] = input[0].split(" ").map((v) => Number(v));
-  const stickerN = Number(input[1]);
-  const sticker = [];
+  const paperN = Number(input[1]);
+  const paperArr = [];
 
-  for (let i = 2; i < 2 + stickerN; i++) {
+  for (let i = 2; i < 2 + paperN; i++) {
     const [n1, n2] = input[i].split(" ").map((v) => Number(v));
-    sticker.push([n1, n2]);
+    paperArr.push([n1, n2]);
   }
 
   let answer = 0;
-  // 조건을 다시 생각하자
-  // 먼저 스티커중 가장 긴부분이 모눈종이보다 크면 스킵
-  // 모눈종이는 고정시키고 스티커를 돌린다
-  // 거기서 sh1+sh2 <= height, Math.max(sw1, sw2) <= width
-  // sw1+sw2 <= width, Math.max(sh1, sh2) <= height
-  for (let i = 0; i < stickerN - 1; i++) {
-    for (let j = i + 1; j < stickerN; j++) {
-      const [stickerH1, stickerW1] = sticker[i];
-      const [stickerH2, stickerW2] = sticker[j];
 
-      const cases = [
-        [stickerH1, stickerW1, stickerH2, stickerW2],
-        [stickerW1, stickerH1, stickerH2, stickerW2],
-        [stickerH1, stickerW1, stickerW2, stickerH2],
-        [stickerW1, stickerH1, stickerW2, stickerH2],
+  for (let i = 0; i < paperArr.length - 1; i++) {
+    for (let j = i + 1; j < paperArr.length; j++) {
+      const [h1, w1] = paperArr[i];
+      const [h2, w2] = paperArr[j];
+      const rotateCases = [
+        [h1, w1, h2, w2],
+        [w1, h1, h2, w2],
+        [h1, w1, w2, h2],
+        [w1, h1, w2, h2],
       ];
 
-      for (const [sh1, sw1, sh2, sw2] of cases) {
-        if (sh1 + sh2 <= height && Math.max(sw1, sw2) <= width) {
-          answer = Math.max(answer, sh1 * sw1 + sh2 * sw2);
+      for (const [y1, x1, y2, x2] of rotateCases) {
+        if (x1 + x2 <= width && Math.max(y1, y2) <= height) {
+          answer = Math.max(answer, x1 * y1 + x2 * y2);
         }
 
-        if (sw1 + sw2 <= width && Math.max(sh1, sh2) <= height) {
-          answer = Math.max(answer, sh1 * sw1 + sh2 * sw2);
+        if (y1 + y2 <= height && Math.max(x1, x2) <= width) {
+          answer = Math.max(answer, x1 * y1 + x2 * y2);
         }
       }
     }
