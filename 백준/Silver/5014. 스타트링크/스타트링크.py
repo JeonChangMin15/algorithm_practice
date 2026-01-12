@@ -1,27 +1,24 @@
 from collections import deque
 
-total, start, end, up, down = list(map(int, input().split()))
-visited = [False]*(total+1)
-visited[start] = True
-
+maxFloor, start, end, up, down = list(map(int, input().split()))
 queue = deque()
 queue.append([start, 0])
 
+visited = [False]*(maxFloor+1)
 answer = 'use the stairs'
+
 while len(queue):
-  current, cnt = queue.popleft()
-  if current == end:
-    print(cnt)
+  pos, cnt = queue.popleft()
+  if pos == end:
     answer = cnt
     break
 
-  if current+up <=total and not visited[current+up]:
-    queue.append([current+up, cnt+1])
-    visited[current+up] = True
+  if pos+up <=maxFloor and not visited[pos+up]:
+    visited[pos+up] = True
+    queue.append([pos+up, cnt+1])
 
-  if current-down >=1 and not visited[current-down]:
-    queue.append([current-down, cnt+1])
-    visited[current-down] = True
+  if pos-down >= 1 and not visited[pos-down]:
+    visited[pos-down] = True
+    queue.append([pos-down, cnt+1])
 
-if answer == 'use the stairs':
-  print('use the stairs')
+print(answer)
