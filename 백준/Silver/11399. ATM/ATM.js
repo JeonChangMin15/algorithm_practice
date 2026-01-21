@@ -4,23 +4,21 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 오름차순으로 넣고 이전 시간이랑 본인시간을  total타임에 넣어서 계산
+// 오름차순으로 정렬해서 prev Time을 누적해서 더해주면된다
 const solution = (input) => {
-  const n = Number(input[0]);
-  const times = input[1]
-    .split(" ")
-    .map((v) => Number(v))
-    .sort((a, b) => a - b);
+  const n = Number(input[0])
+  const time = input[1].split(" ").map(v => Number(v))
+  time.sort((a,b) => a-b)
+  let prevTime = 0
+  let answer = 0
 
-  let prev = 0;
-  let answer = 0;
-
-  for (const time of times) {
-    answer += prev + time;
-    prev += time;
+  for(let i = 0; i< n; i++) {
+    const curPersonTime = time[i]
+    answer += prevTime + curPersonTime
+    prevTime += curPersonTime
   }
 
-  console.log(answer);
+  console.log(answer)
 };
 
 solution(input);
