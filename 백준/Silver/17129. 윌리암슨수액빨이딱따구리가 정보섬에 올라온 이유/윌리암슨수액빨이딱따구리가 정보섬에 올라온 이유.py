@@ -1,9 +1,10 @@
+
 from collections import deque
 
 rowN, colN = list(map(int, input().split()))
 grid = []
 
-for i in range(rowN):
+for _ in range(rowN):
   grid.append(list(map(int, input())))
 
 queue = deque()
@@ -14,29 +15,29 @@ for i in range(rowN):
       queue.append([i,j,0])
       grid[i][j] = 1
 
-dist = -1
+
+isValid = False
+minDist = float('inf')
 dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+food = [3,4,5]
+
 
 while len(queue):
-  x, y, cnt = queue.popleft()
-
-  if dist != -1:
-    break
+  x,y,d = queue.popleft()
 
   for dx, dy in dirs:
     nextX = x + dx
     nextY = y + dy
-    isValid = 0<=nextX<rowN and 0<=nextY<colN and grid[nextX][nextY] != 1
-    if isValid:
-      if grid[nextX][nextY] == 3 or grid[nextX][nextY] == 4 or grid[nextX][nextY] == 5:
-        dist = cnt +1
-        break
-
-      queue.append([nextX, nextY, cnt + 1])
+    isGo = 0<=nextX<rowN and 0<=nextY<colN and grid[nextX][nextY] != 1
+    if isGo:
+      if grid[nextX][nextY] in food:
+        isValid = True
+        minDist = min(minDist, d+1)
+      queue.append([nextX, nextY, d+1])
       grid[nextX][nextY] = 1
 
-if dist == -1:
-  print('NIE')
-else:
+if isValid:
   print("TAK")
-  print(dist)
+  print(minDist)
+else:
+  print("NIE")
