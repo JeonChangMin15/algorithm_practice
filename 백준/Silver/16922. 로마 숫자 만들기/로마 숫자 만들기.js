@@ -4,24 +4,25 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
+// 각 숫자에 몇개씩 할당이 가능한지를 봐야한다
 const solution = (input) => {
   const n = Number(input[0]);
-  const coins = [1, 5, 10, 50];
   const set = new Set();
 
-  function backtrack(coinIndex, left, sum) {
-    if (coinIndex === 3) {
-      set.add(sum + coins[3] * left);
+  const values = [1, 5, 10, 50];
+
+  const backTrack = (startIdx, depth, sum) => {
+    if (depth === n) {
+      set.add(sum);
       return;
     }
 
-    for (let i = 0; i <= left; i++) {
-      const curSum = coins[coinIndex] * i;
-      backtrack(coinIndex + 1, left - i, curSum + sum);
+    for (let i = startIdx; i < 4; i++) {
+      backTrack(i, depth + 1, sum + values[i]);
     }
-  }
+  };
 
-  backtrack(0, n, 0);
+  backTrack(0, 0, 0);
 
   console.log(set.size);
 };
