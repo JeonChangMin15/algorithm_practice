@@ -4,14 +4,9 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 0,0에서 시작 정사각형 그리드
-// 오른쪽과 아래로만 이동 가능하다
-// 가장 끝에 도달하면 게임은 종료
-// 한번에 이동 가능한 칸수는 현재 밟고 있는 칸에 쓰여 있는 수
-// 맨 아래 칸에 -1로 쓰여 있고 나머지 칸에 0부터 100 이하 정수
-// 도달할 수 있으면 HaruHaru 불가능하면 Hing
-// bfs로 해당 위치에서 +grid[x][y] 만큼 움직이는데 방문한 지점과 그리드 크기를 유효
-// 하면 가면된다 끝지점에 도달하면 HaruHaru를 할당하면된다
+// 서 있는 지점의 숫자만큼 오른쪽 아래로 움직일 수 있다
+// 오른쪽 맨 아래 도착하면 HaruHaru 실패하면 Hing
+// bfs로 돌면서 visited로 마킹해야된다
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
@@ -20,32 +15,40 @@ const solution = (input) => {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
 
-  let answer = "Hing";
-
-  const queue = [[0, 0]];
   const visited = Array(n)
     .fill(0)
     .map((v) => Array(n).fill(false));
+
   visited[0][0] = true;
+  const queue = [[0, 0, grid[0][0]]];
+  let answer = "Hing";
 
   while (queue.length) {
-    const [x, y] = queue.shift();
-
+    const [x, y, jump] = queue.shift();
     if (grid[x][y] === -1) {
       answer = "HaruHaru";
       break;
     }
 
-    const jumpN = grid[x][y];
+    const nextJump = [
+      [0, jump],
+      [jump, 0],
+    ];
 
-    if (x + jumpN < n && !visited[x + jumpN][y]) {
-      queue.push([x + jumpN, y]);
-      visited[x + jumpN][y] = true;
-    }
+    for (const [dx, dy] of nextJump) {
+      const nextX = x + dx;
+      const nextY = y + dy;
+      const isValid =
+        nextX >= 0 &&
+        nextX < n &&
+        nextY >= 0 &&
+        nextY < n &&
+        !visited[nextX][nextY];
 
-    if (y + jumpN < n && !visited[x][y + jumpN]) {
-      queue.push([x, y + jumpN]);
-      visited[x][y + jumpN] = true;
+      if (isValid) {
+        queue.push([nextX, nextY, grid[nextX][nextY]]);
+        visited[nextX][nextY] = true;
+      }
     }
   }
 
