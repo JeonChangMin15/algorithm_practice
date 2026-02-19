@@ -4,19 +4,18 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// bfs로 너비 탐색을 진행하면된다
-// 방문한 지점은 visited로 마킹
-// 첫번째줄에 powerA, powerB, start, end가 주어진다
-// 움직일 수 있는건 +1, -1, A,B만큼 좌우로 그리고 A배, B배 위치로 이동가능
-// 0부터 100000이고 최소 이동횟수 출력
+// -1,+1, -A, A, B,-B 그리고 해당 위치에서 A,B배
+// 첫번째줄에 A,B 현재 위치, 타겟 위치가 주어진다
+// 최소이동횟수를 출력
+// 그렇다면 bfs로 탐색하면된다
+// 0 100000 제한 걸려있다
 const solution = (input) => {
-  const [powerA, powerB, start, end] = input[0]
-    .split(" ")
-    .map((v) => Number(v));
-
+  const [A, B, start, end] = input[0].split(" ").map((v) => Number(v));
+  const queue = [[start, 0]];
   const visited = Array(100001).fill(false);
   visited[start] = true;
-  const queue = [[start, 0]];
+
+  const move = [-1, 1, A, -A, B, -B];
 
   while (queue.length) {
     const [pos, cnt] = queue.shift();
@@ -25,21 +24,24 @@ const solution = (input) => {
       break;
     }
 
-    const nextPosArr = [
-      pos * powerA,
-      pos * powerB,
-      pos + powerA,
-      pos - powerA,
-      pos + powerB,
-      pos - powerB,
-      pos + 1,
-      pos - 1,
-    ];
+    const jump1 = pos * A;
+    const jump2 = pos * B;
 
-    for (const nextPos of nextPosArr) {
-      if (nextPos >= 0 && nextPos <= 100000 && !visited[nextPos]) {
-        queue.push([nextPos, cnt + 1]);
-        visited[nextPos] = true;
+    if (jump1 <= 100000 && !visited[jump1]) {
+      queue.push([jump1, cnt + 1]);
+      visited[jump1] = true;
+    }
+
+    if (jump2 <= 100000 && !visited[jump2]) {
+      queue.push([jump2, cnt + 1]);
+      visited[jump2] = true;
+    }
+
+    for (const dx of move) {
+      const nextX = pos + dx;
+      if (nextX >= 0 && nextX <= 100000 && !visited[nextX]) {
+        queue.push([nextX, cnt + 1]);
+        visited[nextX] = true;
       }
     }
   }
