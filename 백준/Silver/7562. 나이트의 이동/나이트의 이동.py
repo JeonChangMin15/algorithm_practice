@@ -1,32 +1,32 @@
 from collections import deque
 
-n = int(input())
-dirs = [[-1,-2],[-2,-1],[-2,1],[-1,2],[1,-2],[2,-1],[2,1],[1,2]]
+testN = int(input())
 
-def bfs(size, startx, starty, endx, endy):
-  grid = [[float('inf')]*size for _ in range(size)]
-  grid[startx][starty] = 0
+def bfs():
+  n = int(input())
+  startX, startY = list(map(int, input().split()))
+  endX, endY = list(map(int, input().split()))
   queue = deque()
-  queue.append([startx, starty, 0])
+  queue.append([startX, startY, 0])
+  
+  dirs = [[-2, -1], [-1, -2], [-2, 1],[-1, 2],[1, -2],[2, -1],[2, 1],[1, 2]]
+
+  visited = [[False]*n for _ in range(n)]
+  visited[startX][startY] = True
 
   while len(queue):
-    x, y, cnt = queue.popleft()
-    if x == endx and y == endy:
+    curX, curY, cnt = queue.popleft()
+    if curX == endX and curY == endY:
       print(cnt)
       break
 
     for dx, dy in dirs:
-      nextX = x + dx
-      nextY = y + dy
-      isValid = 0<=nextX<size and 0<=nextY<size and cnt +1 < grid[nextX][nextY]
+      nextX = curX + dx
+      nextY = curY + dy
+      isValid = 0<=nextX<n and 0<=nextY<n and not visited[nextX][nextY]
       if isValid:
         queue.append([nextX, nextY, cnt +1])
-        grid[nextX][nextY] = cnt + 1
+        visited[nextX][nextY] = True
 
-
-for i in range(n):
-  s = int(input())
-  sx, sy = map(int, input().split())
-  ex, ey = map(int, input().split())
-  bfs(s, sx, sy, ex, ey)
-  
+for _ in range(testN):
+  bfs()
