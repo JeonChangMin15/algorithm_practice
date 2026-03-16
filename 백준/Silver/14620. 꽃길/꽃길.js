@@ -4,23 +4,26 @@ const input = require("fs")
   .split("\n")
   .map((line) => line.replace(/\r/, ""));
 
-// 첫번째줄에 격자 크기, 두번째줄부터 그리드가 주어진다
-// 서로다른 씨앗을 3개를 심어서 하나도 안겹치게해서 최소비용을 구한다
-// 삼중 for문으로 set을 넣고 15개면 계산하는 방식
+// 세곳을 정해서 심는데 심는곳 상하좌우 + 해당 지점까지 포함이된다
+// 해당 지점이 벗어나거나 겹치면 안된다
+// 그렇다면 삼중 for문으로 통해서 모든 지점의 상하좌우를 넣는다
+// 그리고나서 set에 저장한 후 15개인지 확인 후 유효한 지점인지 확인
+// 다 체킹된다면 해당 지점의 위치의 가격을 다 합산해서 비교
 const solution = (input) => {
   const n = Number(input[0]);
   const grid = [];
-  const dirs = [
-    [-1, 0],
-    [1, 0],
-    [0, -1],
-    [0, 1],
-    [0, 0],
-  ];
 
   for (let i = 1; i <= n; i++) {
     grid.push(input[i].split(" ").map((v) => Number(v)));
   }
+
+  const dirs = [
+    [0, 0],
+    [1, 0],
+    [-1, 0],
+    [0, -1],
+    [0, 1],
+  ];
 
   let answer = Infinity;
 
@@ -28,29 +31,35 @@ const solution = (input) => {
     for (let j = 0; j < n * n; j++) {
       for (let k = 0; k < n * n; k++) {
         const set = new Set();
-        const coors = [
-          [Math.floor(i / n), i % n],
-          [Math.floor(j / n), j % n],
-          [Math.floor(k / n), k % n],
+        const firstX = Math.floor(i / n);
+        const firstY = i % n;
+        const secondX = Math.floor(j / n);
+        const secondY = j % n;
+        const thirdX = Math.floor(k / n);
+        const thirdY = k % n;
+        const original = [
+          [firstX, firstY],
+          [secondX, secondY],
+          [thirdX, thirdY],
         ];
 
-        for (const [x, y] of coors) {
+        for (const [x, y] of original) {
           for (const [dx, dy] of dirs) {
-            if (x + dx >= 0 && x + dx < n && y + dy >= 0 && y + dy < n) {
-              set.add(`${x + dx} ${y + dy}`);
+            const nextX = x + dx;
+            const nextY = y + dy;
+            if (nextX >= 0 && nextX < n && nextY >= 0 && nextY < n) {
+              set.add(`${nextX} ${nextY}`);
             }
           }
         }
 
         if (set.size === 15) {
           let cost = 0;
-          for (const [x, y] of coors) {
-            for (const [dx, dy] of dirs) {
-              cost += grid[x + dx][y + dy];
-            }
+          for (const coor of set) {
+            const [x, y] = coor.split(" ").map((v) => Number(v));
+            cost += grid[x][y];
           }
-
-          answer = Math.min(cost, answer);
+          answer = Math.min(answer, cost);
         }
       }
     }
